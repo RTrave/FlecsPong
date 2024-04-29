@@ -12,10 +12,10 @@
 //#include <entt/entt.hpp>
 #include <flecs.h>
 
-//#include "../systems/AISystem.hpp"
-//#include "../systems/CollisionSystem.hpp"
-//#include "../systems/MoveSystem.hpp"
-//#include "../systems/RenderSystem.hpp"
+#include "../systems/AISystem.hpp"
+#include "../systems/CollisionSystem.hpp"
+#include "../systems/MoveSystem.hpp"
+#include "../systems/RenderSystem.hpp"
 
 #include "Window.hpp"
 
@@ -82,6 +82,7 @@ namespace ep
 		/// The default entt registry to hold and manage our entities.
 		///
 //		entt::registry m_registry;
+		flecs::world m_ecs;
 
 		///
 		/// Default event dispatcher.
@@ -91,27 +92,27 @@ namespace ep
 		///
 		/// The AI system.
 		///
-//		AISystem m_ai_system;
+		AISystem m_ai_system;
 
 		///
 		/// The collision system.
 		///
-//		CollisionSystem m_collision_system;
+		CollisionSystem m_collision_system;
 
 		///
 		/// Holds collideables for collision system.
 		///
-//		CollisionHolder m_collideables;
+		CollisionHolder m_collideables;
 
 		///
 		/// The movement system.
 		///
-//		MoveSystem m_move_system;
+		MoveSystem m_move_system;
 
 		///
 		/// The Render system.
 		///
-//		RenderSystem m_render_system;
+		RenderSystem m_render_system;
 	};
 } // namespace ep
 

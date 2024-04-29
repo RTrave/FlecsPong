@@ -7,7 +7,7 @@
 
 #include <SDL2/SDL.h>
 
-//#include "../components/All.hpp"
+#include "../components/All.hpp"
 
 #include "../Log.hpp"
 
@@ -45,7 +45,20 @@ namespace ep
 //		m_registry.emplace<Sprite>(ball, 8, SDL_Colour {255, 255, 255, 255});
 //		m_registry.emplace<Position>(ball, (w / 2.0) - 16.0, (h / 2.0) - 16.0);
 //		m_registry.emplace<Ball>(ball, 0.12, 0.12);
-//
+
+		const auto player_paddle = m_ecs.entity("PlayerPaddle")
+		        .set<Sprite>({12, 96, SDL_Colour {255, 255, 255, 255}})
+		        .set<Position>({20.0, 20.0})
+		        .set<Player>({});
+		const auto ai_paddle     = m_ecs.entity("AIPaddle")
+		        .set<Sprite>({2, 96, SDL_Colour {255, 255, 255, 255}})
+		        .set<Position>({w - 30.0, 20.0})
+		        .set<AI>({w - 30.0, 20.0});
+		const auto ball          = m_ecs.entity("Ball")
+		        .set<Sprite>({8, SDL_Colour {255, 255, 255, 255}})
+		        .set<Position>({(w / 2.0) - 16.0, (h / 2.0) - 16.0})
+		        .set<Ball>({0.12, 0.12});
+
 //		// Assign events to systems.
 //		m_dispatcher.sink<KeyDown>().connect<&MoveSystem::on_key_down>(m_move_system);
 //		m_dispatcher.sink<KeyUp>().connect<&MoveSystem::on_key_up>(m_move_system);
@@ -54,10 +67,10 @@ namespace ep
 //		m_dispatcher.sink<KeyDown>().connect<&Window::on_key_down>(m_window);
 //
 //		// Set up collideables
-//		m_collideables.ai        = ai_paddle;
-//		m_collideables.player    = player_paddle;
-//		m_collideables.ball      = ball;
-//		m_collideables.registery = &m_registry;
+		m_collideables.ai        = ai_paddle;
+		m_collideables.player    = player_paddle;
+		m_collideables.ball      = ball;
+		m_collideables.world = &m_ecs;
 	}
 
 	Game::~Game() noexcept
@@ -128,9 +141,9 @@ namespace ep
 
 	void Game::update(const double time)
 	{
-//		m_move_system.update(time, m_registry);
-//		m_ai_system.update(time, m_registry);
-//		m_collision_system.update(time, m_collideables);
+		m_move_system.update(time, m_ecs);
+		m_ai_system.update(time, m_ecs);
+		m_collision_system.update(time, m_collideables);
 	}
 
 	void Game::render()
@@ -139,7 +152,7 @@ namespace ep
 		SDL_SetRenderDrawColor(m_window.renderer(), 0, 0, 0, SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(m_window.renderer());
 
-//		m_render_system.render(m_window, m_registry);
+		m_render_system.render(m_window, m_ecs);
 
 		// Draw everything.
 		SDL_RenderPresent(m_window.renderer());
