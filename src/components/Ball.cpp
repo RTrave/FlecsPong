@@ -57,14 +57,14 @@ namespace ep
 //
 //		return *this;
 //	}
-//
-//	const double Ball::initial_x_vel() const noexcept
-//	{
-//		return m_initial_vel_x;
-//	}
-//
-//	const double Ball::initial_y_vel() const noexcept
-//	{
-//		return m_initial_vel_y;
-//	}
+
+	const double Ball::initial_x_vel() const noexcept
+	{
+		return m_initial_vel_x;
+	}
+
+	const double Ball::initial_y_vel() const noexcept
+	{
+		return m_initial_vel_y;
+	}
 } // namespace ep

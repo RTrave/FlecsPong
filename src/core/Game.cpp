@@ -51,8 +51,7 @@ namespace ep
 //		        .set<Position>({20.0, 20.0})
 //		        .set<Player>({});
 		auto player_paddle = m_ecs.entity("PlayerPaddle")
-		        .set(
-            [](Sprite &s, Position &pos, Player &p)
+		        .set([](Sprite &s, Position &pos, Player &p)
             {
                 s.m_width = 12;
                 s.m_height = 96;
@@ -62,16 +61,15 @@ namespace ep
                 pos.m_y = 20.0;
                 p.m_movement = Player::MoveDirection::STOPPED;
             });
-		auto ai_paddle     = m_ecs.entity("AIPaddle")
-                        .set(
+		auto ai_paddle     = m_ecs.entity("AIPaddle");
+        ai_paddle.set(
                     [](Sprite &s)
                     {
-                        s.m_width = 2;
+                        s.m_width = 12;
                         s.m_height = 96;
                         s.m_colour = SDL_Colour{255, 255, 255, 255};
                         s.m_radius = 0;
                     })
-//              .set<Sprite>({2, 96, SDL_Colour {255, 255, 255, 255}})
 		        .set<Position>({w - 30.0, 20.0})
 		        .set<AI>({w - 30.0, 20.0});
 		auto ball          = m_ecs.entity("Ball")
@@ -85,7 +83,7 @@ namespace ep
                             })
 //		        .set<Sprite>({8, SDL_Colour {255, 255, 255, 255}})
 		        .set<Position>({(w / 2.0) - 16.0, (h / 2.0) - 16.0})
-		        .set<Ball>({0.12, 0.12});
+		        .set<Ball>({0.12, 0.12, 0, 0.12, 0.12});
 
 //		// Assign events to systems.
 //		m_dispatcher.sink<KeyDown>().connect<&MoveSystem::on_key_down>(m_move_system);
@@ -158,11 +156,14 @@ namespace ep
 
 				case SDL_KEYDOWN:
 //					m_dispatcher.trigger<KeyDown>(m_window.m_event.key.keysym.sym);
-					break;
+
+				    m_move_system.on_key_down(m_window.m_event.key.keysym.sym);
+				    break;
 
 				case SDL_KEYUP:
 //					m_dispatcher.trigger<KeyUp>(m_window.m_event.key.keysym.sym);
-					break;
+				    m_move_system.on_key_up(m_window.m_event.key.keysym.sym);
+				    break;
 			}
 		}
 	}

@@ -45,14 +45,14 @@ namespace ep
 //		///
 //		/// \return Const double.
 //		///
-//		[[nodiscard]] const double initial_x_vel() const noexcept;
+		[[nodiscard]] const double initial_x_vel() const noexcept;
 //
 //		///
 //		/// Get initial x velocity.
 //		///
 //		/// \return Const double.
 //		///
-//		[[nodiscard]] const double initial_y_vel() const noexcept;
+		[[nodiscard]] const double initial_y_vel() const noexcept;
 //
 //	public:
 		///
