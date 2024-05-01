@@ -1,14 +1,14 @@
 ///
 /// KeyDown.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_EVENTS_KEYDOWN_HPP_
-#define ENTTPONG_EVENTS_KEYDOWN_HPP_
+#ifndef FLECSPONG_EVENTS_KEYDOWN_HPP_
+#define FLECSPONG_EVENTS_KEYDOWN_HPP_
 
-namespace ep
+namespace fp
 {
 	///
 	/// Simple keydown event.

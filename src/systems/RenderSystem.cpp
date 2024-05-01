@@ -1,11 +1,10 @@
 ///
 /// RenderSystem.cpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-//#include <entt/entt.hpp>
 #include <flecs.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -15,15 +14,12 @@
 
 #include "RenderSystem.hpp"
 
-namespace ep
+namespace fp
 {
 	void RenderSystem::render(Window& window, flecs::world& world)
 	{
 		// First we retrieve a view of the entitys we want to process, specifying which components.
 		// Then we iterate over each one and utilize the components.
-
-//		auto view = registry.view<Sprite, Position>();
-//		view.each([&](const auto& spr, auto& pos) {
 	    auto render_query = world.query<Sprite, Position>();
 	    render_query.each([&](Sprite& spr, Position& pos) {
 	        if (spr.m_radius != 0)

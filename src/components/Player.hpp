@@ -1,14 +1,14 @@
 ///
 /// Player.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_COMPONENTS_PLAYER_HPP_
-#define ENTTPONG_COMPONENTS_PLAYER_HPP_
+#ifndef FLECSPONG_COMPONENTS_PLAYER_HPP_
+#define FLECSPONG_COMPONENTS_PLAYER_HPP_
 
-namespace ep
+namespace fp
 {
 	///
 	/// Makes an entity a ball.

@@ -1,30 +1,24 @@
 ///
 /// CollisionSystem.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_SYSTEMS_COLLISIONSYSTEM_HPP_
-#define ENTTPONG_SYSTEMS_COLLISIONSYSTEM_HPP_
+#ifndef FLECSPONG_SYSTEMS_COLLISIONSYSTEM_HPP_
+#define FLECSPONG_SYSTEMS_COLLISIONSYSTEM_HPP_
 
-//#include <entt/fwd.hpp>
-
-namespace ep
+namespace fp
 {
 	///
 	/// Holds information about possible colliders.
 	///
 	struct CollisionHolder
 	{
-//		entt::entity player;
-//		entt::entity ai;
-//		entt::entity ball;
         flecs::entity player;
         flecs::entity ai;
         flecs::entity ball;
 
-//		entt::registry* registery;
         flecs::world* world;
 	};
 

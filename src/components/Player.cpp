@@ -1,13 +1,13 @@
 ///
 /// Player.cpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
 #include "Player.hpp"
 
-namespace ep
+namespace fp
 {
 	Player::Player() noexcept
 	    : m_movement {MoveDirection::STOPPED}

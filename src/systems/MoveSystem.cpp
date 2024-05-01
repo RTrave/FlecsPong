@@ -1,11 +1,10 @@
 ///
 /// MoveSystem.cpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-//#include <entt/entt.hpp>
 #include <flecs.h>
 
 #include "../components/Ball.hpp"
@@ -16,7 +15,7 @@
 
 [[nodiscard]] const double randomize_velocity_dir(const double vel)
 {
-	switch (ep::random(0, 1))
+	switch (fp::random(0, 1))
 	{
 		case 0:
 			return vel;
@@ -29,7 +28,7 @@
 	return 0;
 }
 
-namespace ep
+namespace fp
 {
 	void MoveSystem::on_key_down(const KeyDown& key_down) noexcept
 	{
@@ -56,8 +55,6 @@ namespace ep
 	void MoveSystem::update(const double time, flecs::world& world)
 	{
 		// We only need to update the player position, since the ai wil be managed by the ai system.
-//		auto player_view = world.view<Player, Position>();
-//		player_view.each([&](auto& plr, auto& pos) {
 		auto player_query = world.query<Player, Position>();
 		player_query.each([&](Player& plr, Position& pos) {
 			plr.m_movement = m_player_movement;
@@ -83,9 +80,7 @@ namespace ep
 		});
 
 		// Next, we want to update the balls position and move it according to the directions its currently travelling.
-//		auto ball_view1 = registry.view<Ball, Position>();
 		auto ball_query = world.query<Ball, Position>();
-//		ball_view.each([&](auto& ball, auto& pos) {
 		ball_query.each([&](Ball& ball, Position& pos) {
 			// Allow the ball to move based on a fixed-timestep loop.
 			pos.m_x += ball.m_vel_x * time;

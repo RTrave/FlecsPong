@@ -1,12 +1,12 @@
 ///
 /// Log.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_LOG_HPP_
-#define ENTTPONG_LOG_HPP_
+#ifndef FLECSPONG_LOG_HPP_
+#define FLECSPONG_LOG_HPP_
 
 #include <iostream>
 #include <string_view>
@@ -52,7 +52,7 @@
 ///
 #define LOG_NEWLINE "\n"
 
-namespace ep
+namespace fp
 {
 	///
 	/// Convenience function.

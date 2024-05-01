@@ -1,16 +1,14 @@
 ///
 /// AISystem.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_SYSTEMS_AISYSTEM_HPP_
-#define ENTTPONG_SYSTEMS_AISYSTEM_HPP_
+#ifndef FLECSPONG_SYSTEMS_AISYSTEM_HPP_
+#define FLECSPONG_SYSTEMS_AISYSTEM_HPP_
 
-//#include <entt/fwd.hpp>
-
-namespace ep
+namespace fp
 {
 	///
 	/// This system will ensure the ai is always following the ball, by centering the ai paddle
@@ -35,7 +33,6 @@ namespace ep
 		/// \param time Update loop delta time.
 		/// \param registry The registry to retrieve entities from.
 		///
-//		void update(const double time, entt::registry& registry);
 		void update(const double time, flecs::world& ecs);
 	};
 } // namespace ep

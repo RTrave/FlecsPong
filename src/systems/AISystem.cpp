@@ -1,11 +1,10 @@
 ///
 /// AISystem.cpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-//#include <entt/entt.hpp>
 #include <flecs.h>
 
 
@@ -15,7 +14,7 @@
 
 #include "AISystem.hpp"
 
-namespace ep
+namespace fp
 {
 	void AISystem::update(const double time, flecs::world& ecs)
 	{
@@ -28,12 +27,8 @@ namespace ep
 		*/
 
 		// Takes advantage of the fact that there is only 1 AI and 1 Ball.
-//		auto ai_view   = registry.view<AI, Position>();
 		auto ai_query = ecs.query<AI, Position>();
-//		auto ball_view = registry.view<Ball, Position>();
-//		flecs::query<Ball, Position> ball_query = ecs.query<Ball, Position>();
         auto ball_query = ecs.query<Ball, Position>();
-
 		ai_query.each([&](flecs::entity e, AI& ai, Position& ai_pos) {
 		    ai.m_x = ai_pos.m_x;
 		    ai.m_y = ai_pos.m_y;
@@ -49,25 +44,7 @@ namespace ep
                         ai_pos.m_y -= 2.5;
                     }
 		        }
-//		        if (ball_pos.m_y > ai_pos.m_y)
-//                {
-//                    ai_pos.m_y += 2.5;
-//                }
-//                else if (ball_pos.m_y < ai_pos.m_y)
-//                {
-//                    ai_pos.m_y -= 2.5;
-//                }
             });
-//		    ball_query.each([](flecs::entity e, Ball& ball, Position& ball_pos) {
-//		        if (ball_pos.m_y > ai_pos.m_y)
-//                {
-//                    ai_pos.m_y += 2.5;
-//                }
-//                else if (ball_pos.m_y < ai_pos.m_y)
-//                {
-//                    ai_pos.m_y -= 2.5;
-//                }
-//		    });
 		});
 
 		ai_query.each([&](AI& ai, Position& ai_pos) {

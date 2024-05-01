@@ -1,15 +1,14 @@
 ///
 /// Game.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// MIT LICENSE.
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_CORE_GAME_HPP_
-#define ENTTPONG_CORE_GAME_HPP_
+#ifndef FLECSPONG_CORE_GAME_HPP_
+#define FLECSPONG_CORE_GAME_HPP_
 
-//#include <entt/entt.hpp>
 #include <flecs.h>
 
 #include "../systems/AISystem.hpp"
@@ -19,7 +18,7 @@
 
 #include "Window.hpp"
 
-namespace ep
+namespace fp
 {
 	///
 	/// This class will manage our game data and game loop.
@@ -79,9 +78,8 @@ namespace ep
 		Window m_window;
 
 		///
-		/// The default entt registry to hold and manage our entities.
+		/// The default flecs registry to hold and manage our entities.
 		///
-//		entt::registry m_registry;
 		flecs::world m_ecs;
 
 		///

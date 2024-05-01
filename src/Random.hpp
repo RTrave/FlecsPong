@@ -1,16 +1,16 @@
 ///
 /// Random.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_RANDOM_HPP_
-#define ENTTPONG_RANDOM_HPP_
+#ifndef FLECSPONG_RANDOM_HPP_
+#define FLECSPONG_RANDOM_HPP_
 
 #include <random>
 
-namespace ep
+namespace fp
 {
 	///
 	/// Credits: http://stackoverflow.com/a/32907541.

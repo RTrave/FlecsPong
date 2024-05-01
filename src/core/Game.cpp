@@ -1,6 +1,6 @@
 ///
 /// Game.cpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
@@ -13,7 +13,7 @@
 
 #include "Game.hpp"
 
-namespace ep
+namespace fp
 {
 	Game::Game(std::string_view title, const int w, const int h, std::uint32_t flags)
 	    : m_window {}
@@ -28,28 +28,6 @@ namespace ep
 
 		// Here, we are creating the entities using EnTT and attaching the relevant components and tags.
 		// We can invoke the constructor of the component or tag in the assign() and attach() methods of the registry.
-
-//		const auto player_paddle = m_registry.create();
-//		const auto ai_paddle     = m_registry.create();
-//		const auto ball          = m_registry.create();
-//
-//		// Assign component data to entitys.
-//		m_registry.emplace<Sprite>(player_paddle, 12, 96, SDL_Colour {255, 255, 255, 255});
-//		m_registry.emplace<Position>(player_paddle, 20.0, 20.0);
-//		m_registry.emplace<Player>(player_paddle);
-//
-//		m_registry.emplace<Sprite>(ai_paddle, 12, 96, SDL_Colour {255, 255, 255, 255});
-//		m_registry.emplace<Position>(ai_paddle, w - 30.0, 20.0);
-//		m_registry.emplace<AI>(ai_paddle, w - 30.0, 20.0);
-//
-//		m_registry.emplace<Sprite>(ball, 8, SDL_Colour {255, 255, 255, 255});
-//		m_registry.emplace<Position>(ball, (w / 2.0) - 16.0, (h / 2.0) - 16.0);
-//		m_registry.emplace<Ball>(ball, 0.12, 0.12);
-
-//		auto player_paddle = m_ecs.entity("PlayerPaddle");
-//		player_paddle.set<Sprite>({12, 96, SDL_Colour {255, 255, 255, 255}})
-//		        .set<Position>({20.0, 20.0})
-//		        .set<Player>({});
 		auto player_paddle = m_ecs.entity("PlayerPaddle")
 		        .set([](Sprite &s, Position &pos, Player &p)
             {
@@ -62,8 +40,7 @@ namespace ep
                 p.m_movement = Player::MoveDirection::STOPPED;
             });
 		auto ai_paddle     = m_ecs.entity("AIPaddle");
-        ai_paddle.set(
-                    [](Sprite &s)
+        ai_paddle.set([](Sprite &s)
                     {
                         s.m_width = 12;
                         s.m_height = 96;
@@ -156,8 +133,8 @@ namespace ep
 
 				case SDL_KEYDOWN:
 //					m_dispatcher.trigger<KeyDown>(m_window.m_event.key.keysym.sym);
-
 				    m_move_system.on_key_down(m_window.m_event.key.keysym.sym);
+                    m_window.on_key_down(m_window.m_event.key.keysym.sym);
 				    break;
 
 				case SDL_KEYUP:

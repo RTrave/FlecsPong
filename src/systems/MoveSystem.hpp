@@ -1,14 +1,13 @@
 ///
 /// MoveSystem.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_SYSTEMS_MOVESYSTEM_HPP_
-#define ENTTPONG_SYSTEMS_MOVESYSTEM_HPP_
+#ifndef FLECSPONG_SYSTEMS_MOVESYSTEM_HPP_
+#define FLECSPONG_SYSTEMS_MOVESYSTEM_HPP_
 
-//#include <entt/fwd.hpp>
 #include <flecs.h>
 #include <SDL2/SDL_events.h>
 
@@ -16,7 +15,7 @@
 #include "../events/KeyDown.hpp"
 #include "../events/KeyUp.hpp"
 
-namespace ep
+namespace fp
 {
 	///
 	/// This class will take data from the appropriate components

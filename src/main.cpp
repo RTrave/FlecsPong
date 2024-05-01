@@ -1,6 +1,6 @@
 ///
 /// main.cpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
@@ -17,7 +17,7 @@ int main(int argsc, char* argsv[])
 
 	try
 	{
-		ep::Game pong("Flecs Pong", 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI);
+		fp::Game pong("Flecs Pong", 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI);
 		return pong.run();
 	}
 	catch (const std::exception& e)

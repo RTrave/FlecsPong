@@ -1,6 +1,6 @@
 ///
 /// Window.cpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
@@ -8,7 +8,7 @@
 #include "../Log.hpp"
 #include "Window.hpp"
 
-namespace ep
+namespace fp
 {
 	Window::Window()
 	    : m_is_open {true}, m_window {nullptr}, m_renderer {nullptr}
@@ -38,13 +38,13 @@ namespace ep
 		}
 	}
 
-//	void Window::on_key_down(const KeyDown& key_down) noexcept
-//	{
-//		if (key_down.m_keycode == SDLK_ESCAPE)
-//		{
-//			close();
-//		}
-//	}
+	void Window::on_key_down(const KeyDown& key_down) noexcept
+	{
+		if (key_down.m_keycode == SDLK_ESCAPE)
+		{
+			close();
+		}
+	}
 
 	void Window::close() noexcept
 	{

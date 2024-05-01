@@ -1,18 +1,16 @@
 ///
 /// RenderSystem.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_SYSTEMS_RENDERSYSTEM_HPP_
-#define ENTTPONG_SYSTEMS_RENDERSYSTEM_HPP_
-
-//#include <entt/fwd.hpp>
+#ifndef FLECSPONG_SYSTEMS_RENDERSYSTEM_HPP_
+#define FLECSPONG_SYSTEMS_RENDERSYSTEM_HPP_
 
 #include "../core/Window.hpp"
 
-namespace ep
+namespace fp
 {
 	///
 	/// This class will take data from the appropriate components

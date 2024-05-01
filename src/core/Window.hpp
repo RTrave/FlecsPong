@@ -1,12 +1,12 @@
 ///
 /// Window.hpp
-/// EnttPong
+/// FlecsPong
 ///
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef ENTTPONG_CORE_WINDOW_HPP_
-#define ENTTPONG_CORE_WINDOW_HPP_
+#ifndef FLECSPONG_CORE_WINDOW_HPP_
+#define FLECSPONG_CORE_WINDOW_HPP_
 
 #include <cstdint>
 #include <string_view>
@@ -15,9 +15,9 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
-//#include "../events/KeyDown.hpp"
+#include "../events/KeyDown.hpp"
 
-namespace ep
+namespace fp
 {
 	///
 	/// Basic window abstraction over SDL2 for this demo app.
@@ -50,7 +50,7 @@ namespace ep
 		///
 		/// \param key_down Key Down Event.
 		///
-//		void on_key_down(const KeyDown& key_down) noexcept;
+		void on_key_down(const KeyDown& key_down) noexcept;
 
 		///
 		/// Close the window.
