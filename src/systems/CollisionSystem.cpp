@@ -19,8 +19,11 @@ namespace fp
 	void CollisionSystem::update(const double time, CollisionHolder& holder)
 	{
 		// We use a collision holder instead of something like a Dynamic Tree /BVH / Quad Tree which is out of scope for this.
-	    auto ball_query = holder.world->query<Ball, Position, Sprite>();
-	    ball_query.each([&](Ball& ball, Position& ball_pos, Sprite& ball_spr) {
+        auto ball_query = holder.world->query<Ball>();
+	    ball_query.each([&](Ball& ball) {
+	        const auto& ball_pos = holder.ball.get<Position>()[0];
+	        const auto& ball_spr = holder.ball.get<Sprite>()[0];
+
 	        const auto& ai_pos = holder.ai.get<Position>()[0];
 	        const auto& ai_spr = holder.ai.get<Sprite>()[0];
 

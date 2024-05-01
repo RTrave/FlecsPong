@@ -39,7 +39,7 @@ namespace fp
                 pos.m_y = 20.0;
                 p.m_movement = Player::MoveDirection::STOPPED;
             });
-		auto ai_paddle     = m_ecs.entity("AIPaddle");
+		auto ai_paddle = m_ecs.entity("AIPaddle");
         ai_paddle.set([](Sprite &s)
                     {
                         s.m_width = 12;
@@ -49,15 +49,14 @@ namespace fp
                     })
 		        .set<Position>({w - 30.0, 20.0})
 		        .set<AI>({w - 30.0, 20.0});
-		auto ball          = m_ecs.entity("Ball")
-                                .set(
-                            [](Sprite &s)
-                            {
-                                s.m_width = 0;
-                                s.m_height = 0;
-                                s.m_colour = SDL_Colour{255, 255, 255, 255};
-                                s.m_radius = 8;
-                            })
+		auto ball = m_ecs.entity("Ball")
+		        .set([](Sprite &s)
+                    {
+                        s.m_width = 0;
+                        s.m_height = 0;
+                        s.m_colour = SDL_Colour{255, 255, 255, 255};
+                        s.m_radius = 8;
+                    })
 //		        .set<Sprite>({8, SDL_Colour {255, 255, 255, 255}})
 		        .set<Position>({(w / 2.0) - 16.0, (h / 2.0) - 16.0})
 		        .set<Ball>({0.12, 0.12, 0, 0.12, 0.12});
