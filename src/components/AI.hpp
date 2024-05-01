@@ -13,33 +13,34 @@ namespace ep
 	///
 	/// Keeps track of the AI's movement.
 	///
-	class AI final
+//	class AI final
+    struct AI
 	{
-	public:
-		///
-		/// Argument Constructor.
-		///
-		/// \param x The starting x-pos on screen.
-		/// \param y The starting y-pos on screen.
-		///
-		AI(const double x, const double y) noexcept;
-
-		///
-		/// Move constructor.
-		///
-		AI(AI&&) noexcept;
-
-		///
-		/// Default destructor.
-		///
-		~AI() noexcept = default;
-
-		///
-		/// Move assignment overload.
-		///
-		AI& operator=(AI&&) noexcept;
-
-	public:
+//	public:
+//		///
+//		/// Argument Constructor.
+//		///
+//		/// \param x The starting x-pos on screen.
+//		/// \param y The starting y-pos on screen.
+//		///
+//		AI(const double x, const double y) noexcept;
+//
+//		///
+//		/// Move constructor.
+//		///
+//		AI(AI&&) noexcept;
+//
+//		///
+//		/// Default destructor.
+//		///
+//		~AI() noexcept = default;
+//
+//		///
+//		/// Move assignment overload.
+//		///
+//		AI& operator=(AI&&) noexcept;
+//
+//	public:
 		///
 		/// x pos on screen.
 		///

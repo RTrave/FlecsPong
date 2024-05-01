@@ -21,6 +21,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17") #c++11
 INCLUDE(FindPkgConfig)
 
 PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+PKG_SEARCH_MODULE(SDL2GFX REQUIRED SDL2_gfx>=1.0.2)
 #PKG_SEARCH_MODULE(SDL2NET REQUIRED SDL2_net>=2.0.0)
 
 include(FetchContent)
@@ -54,6 +55,7 @@ add_executable(
 target_link_libraries(
         flecspong
         ${SDL2_LIBRARIES}
+        ${SDL2GFX_LIBRARIES}
         flecs::flecs_static 
 #        ${SDL2NET_LIBRARIES}
 	)

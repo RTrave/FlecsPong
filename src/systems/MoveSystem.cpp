@@ -26,6 +26,7 @@
 			return -vel;
 			break;
 	}
+	return 0;
 }
 
 namespace ep

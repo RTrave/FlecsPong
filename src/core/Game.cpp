@@ -46,16 +46,44 @@ namespace ep
 //		m_registry.emplace<Position>(ball, (w / 2.0) - 16.0, (h / 2.0) - 16.0);
 //		m_registry.emplace<Ball>(ball, 0.12, 0.12);
 
-		const auto player_paddle = m_ecs.entity("PlayerPaddle")
-		        .set<Sprite>({12, 96, SDL_Colour {255, 255, 255, 255}})
-		        .set<Position>({20.0, 20.0})
-		        .set<Player>({});
-		const auto ai_paddle     = m_ecs.entity("AIPaddle")
-		        .set<Sprite>({2, 96, SDL_Colour {255, 255, 255, 255}})
+//		auto player_paddle = m_ecs.entity("PlayerPaddle");
+//		player_paddle.set<Sprite>({12, 96, SDL_Colour {255, 255, 255, 255}})
+//		        .set<Position>({20.0, 20.0})
+//		        .set<Player>({});
+		auto player_paddle = m_ecs.entity("PlayerPaddle")
+		        .set(
+            [](Sprite &s, Position &pos, Player &p)
+            {
+                s.m_width = 12;
+                s.m_height = 96;
+                s.m_colour = SDL_Colour{255, 255, 255, 255};
+                s.m_radius = 0;
+                pos.m_x = 20.0;
+                pos.m_y = 20.0;
+                p.m_movement = Player::MoveDirection::STOPPED;
+            });
+		auto ai_paddle     = m_ecs.entity("AIPaddle")
+                        .set(
+                    [](Sprite &s)
+                    {
+                        s.m_width = 2;
+                        s.m_height = 96;
+                        s.m_colour = SDL_Colour{255, 255, 255, 255};
+                        s.m_radius = 0;
+                    })
+//              .set<Sprite>({2, 96, SDL_Colour {255, 255, 255, 255}})
 		        .set<Position>({w - 30.0, 20.0})
 		        .set<AI>({w - 30.0, 20.0});
-		const auto ball          = m_ecs.entity("Ball")
-		        .set<Sprite>({8, SDL_Colour {255, 255, 255, 255}})
+		auto ball          = m_ecs.entity("Ball")
+                                .set(
+                            [](Sprite &s)
+                            {
+                                s.m_width = 0;
+                                s.m_height = 0;
+                                s.m_colour = SDL_Colour{255, 255, 255, 255};
+                                s.m_radius = 8;
+                            })
+//		        .set<Sprite>({8, SDL_Colour {255, 255, 255, 255}})
 		        .set<Position>({(w / 2.0) - 16.0, (h / 2.0) - 16.0})
 		        .set<Ball>({0.12, 0.12});
 
