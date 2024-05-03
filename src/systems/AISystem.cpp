@@ -63,4 +63,27 @@ namespace fp
 			});
 		});
 	}
+
+void aiSystem_process(flecs::iter &it, AI *ai, Position *ai_pos)
+{
+    ai->m_x = ai_pos->m_x;
+    ai->m_y = ai_pos->m_y;
+//    const auto& ball_pos = it.world().get<Position>("Ball")[0];
+//    printf("TEST: %f\n", ball_pos.m_x);
+
+//    auto ball_query = it.world().query<Ball, Position>();
+    it.world().each([&](flecs::entity e, Ball& ball, Position& ball_pos) {
+//        for (auto i : it) {
+            if (ball_pos.m_y > ai_pos->m_y)
+            {
+                ai_pos->m_y += 2.5;
+            }
+            else if (ball_pos.m_y < ai_pos->m_y)
+            {
+                ai_pos->m_y -= 2.5;
+            }
+//        }
+    });
+}
+
 } // namespace ep

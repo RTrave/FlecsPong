@@ -35,6 +35,7 @@ namespace fp
 		///
 		void update(const double time, flecs::world& ecs);
 	};
+void aiSystem_process(flecs::iter& it, AI* ai, Position* ai_pos);
 } // namespace ep
 
 #endif

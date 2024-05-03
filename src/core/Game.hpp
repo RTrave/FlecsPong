@@ -11,6 +11,7 @@
 
 #include <flecs.h>
 
+#include "../components/All.hpp"
 #include "../systems/AISystem.hpp"
 #include "../systems/CollisionSystem.hpp"
 #include "../systems/MoveSystem.hpp"
@@ -58,19 +59,19 @@ namespace fp
 		///
 		/// Recieve and process game events.
 		///
-		void events();
+//		void events();
 
 		///
 		/// Process game data.
 		///
 		/// \param time The DeltaTime or similar from fixed-timestep loop.
 		///
-		void update(const double time);
+//		void update(const double time);
 
 		///
 		/// Render everything to the window.
 		///
-		void render();
+//		void render();
 
 		///
 		/// Our main window.
@@ -107,10 +108,15 @@ namespace fp
 		///
 		MoveSystem m_move_system;
 
+        ///
+        /// The movement system.
+        ///
+        InputSystem *m_input_system;
+
 		///
 		/// The Render system.
 		///
-		RenderSystem m_render_system;
+		RenderSystem *m_render_system;
 	};
 } // namespace ep
 

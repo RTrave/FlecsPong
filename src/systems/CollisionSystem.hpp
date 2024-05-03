@@ -19,7 +19,7 @@ namespace fp
         flecs::entity ai;
         flecs::entity ball;
 
-        flecs::world* world;
+//        flecs::world* world;
 	};
 
 	///
@@ -47,6 +47,7 @@ namespace fp
 		///
 		void update(const double time, CollisionHolder& holder);
 	};
+void collisionSystem_process(flecs::iter& it, Ball* ball, Position* ball_pos, Sprite* ball_spr);
 } // namespace ep
 
 #endif

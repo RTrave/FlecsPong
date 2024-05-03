@@ -22,7 +22,7 @@ namespace fp
 		///
 		/// Default constructor.
 		///
-		RenderSystem() = default;
+		RenderSystem(Window* window);
 
 		///
 		/// Default destructor.
@@ -33,10 +33,21 @@ namespace fp
 		/// Renders all entities.
 		///
 		/// \param window The Window to render to.
-		/// \param registry The registry to retrieve entities from.
+		/// \param world The registry to retrieve entities from.
 		///
 		void render(Window& window, flecs::world& world);
+
+        ///
+        /// Pointer to window data.
+        ///
+        Window* m_window;
 	};
+
+//	void renderSystem_init(Window* window);
+    void renderSystem_flush(flecs::iter &it);
+	void renderSystem_process(flecs::iter &it, Sprite* spr, Position* pos);
+    void renderSystem_draw(flecs::iter &it);
+
 } // namespace ep
 
 #endif

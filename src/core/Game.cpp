@@ -59,7 +59,7 @@ namespace fp
                     })
 //		        .set<Sprite>({8, SDL_Colour {255, 255, 255, 255}})
 		        .set<Position>({(w / 2.0) - 16.0, (h / 2.0) - 16.0})
-		        .set<Ball>({0.12, 0.12, 0, 0.12, 0.12});
+		        .set<Ball>({0.15, 0.15, 0, 0.15, 0.15});
 
 //		// Assign events to systems.
 //		m_dispatcher.sink<KeyDown>().connect<&MoveSystem::on_key_down>(m_move_system);
@@ -72,7 +72,43 @@ namespace fp
 		m_collideables.ai        = ai_paddle;
 		m_collideables.player    = player_paddle;
 		m_collideables.ball      = ball;
-		m_collideables.world = &m_ecs;
+//		m_collideables.world = &m_ecs;
+
+		m_input_system = new InputSystem(&m_window);
+		//		m_move_system.init(&m_ecs);
+//		inputSystem_init(&m_window);
+		m_ecs.system<Player, Position>("InputSystem")
+                .kind(flecs::PreUpdate)
+                .ctx(static_cast<void*>(m_input_system))
+                .iter(inputSystem_process);
+
+		m_ecs.system<Player, Position>("MoveSystemPlayer")
+		        .iter(moveSystem_processPlayer);
+        m_ecs.system<Ball, Position>("MoveSystemBall")
+                .iter(moveSystem_processBall);
+        m_ecs.system<AI, Position>("MoveSystemAI")
+                .iter(aiSystem_process);
+
+        m_ecs.system<Ball, Position, Sprite>("CollisionSystem")
+                .kind(flecs::PostUpdate)
+                .ctx(static_cast<void*>(&m_collideables))
+                .iter(collisionSystem_process);
+
+        m_render_system = new RenderSystem(&m_window);
+
+//        renderSystem_init(&m_window);
+        m_ecs.system("RenderSystemFlush")
+                .kind(flecs::PreStore)
+                .ctx(static_cast<void*>(m_render_system))
+                .iter(renderSystem_flush);
+        m_ecs.system<Sprite, Position>("RenderSystem")
+                .kind(flecs::OnStore)
+                .ctx(static_cast<void*>(m_render_system))
+                .iter(renderSystem_process);
+        m_ecs.system("RenderSystemDraw")
+                .kind(flecs::OnStore)
+                .ctx(static_cast<void*>(m_render_system))
+                .iter(renderSystem_draw);
 	}
 
 	Game::~Game() noexcept
@@ -103,63 +139,64 @@ namespace fp
 
 			accumulator += frame_time;
 
-			events();
+//			events();
 
 			while (accumulator >= dt)
 			{
-				update(accumulator);
+		        // Flush renderer.
+//			    SDL_SetRenderDrawColor(m_window.renderer(), 0, 0, 0, SDL_ALPHA_OPAQUE);
+//			    SDL_RenderClear(m_window.renderer());
+
+			    m_ecs.progress(accumulator);
+
+			    // Draw everything.
+//	            SDL_RenderPresent(m_window.renderer());
 
 				accumulator -= dt;
 				time += dt;
 			}
 
-			render();
+//			render();
+
 		}
 
 		return EXIT_SUCCESS;
 	}
 
-	void Game::events()
-	{
-		// Process all user and system events.
-		while (SDL_PollEvent(&m_window.m_event) != 0)
-		{
-			switch (m_window.m_event.type)
-			{
-				case SDL_QUIT:
-					m_window.close();
-					break;
-
-				case SDL_KEYDOWN:
-//					m_dispatcher.trigger<KeyDown>(m_window.m_event.key.keysym.sym);
-				    m_move_system.on_key_down(m_window.m_event.key.keysym.sym);
-                    m_window.on_key_down(m_window.m_event.key.keysym.sym);
-				    break;
-
-				case SDL_KEYUP:
-//					m_dispatcher.trigger<KeyUp>(m_window.m_event.key.keysym.sym);
-				    m_move_system.on_key_up(m_window.m_event.key.keysym.sym);
-				    break;
-			}
-		}
-	}
-
-	void Game::update(const double time)
-	{
-		m_move_system.update(time, m_ecs);
-		m_ai_system.update(time, m_ecs);
-		m_collision_system.update(time, m_collideables);
-	}
-
-	void Game::render()
-	{
-		// Flush renderer.
-		SDL_SetRenderDrawColor(m_window.renderer(), 0, 0, 0, SDL_ALPHA_OPAQUE);
-		SDL_RenderClear(m_window.renderer());
-
-		m_render_system.render(m_window, m_ecs);
-
-		// Draw everything.
-		SDL_RenderPresent(m_window.renderer());
-	}
+//	void Game::events()
+//	{
+//		// Process all user and system events.
+//		while (SDL_PollEvent(&m_window.m_event) != 0)
+//		{
+//			switch (m_window.m_event.type)
+//			{
+//				case SDL_QUIT:
+//					m_window.close();
+//					break;
+//
+//				case SDL_KEYDOWN:
+////					m_dispatcher.trigger<KeyDown>(m_window.m_event.key.keysym.sym);
+//				    m_move_system.on_key_down(m_window.m_event.key.keysym.sym, m_ecs);
+//                    m_window.on_key_down(m_window.m_event.key.keysym.sym);
+//				    break;
+//
+//				case SDL_KEYUP:
+////					m_dispatcher.trigger<KeyUp>(m_window.m_event.key.keysym.sym);
+//				    m_move_system.on_key_up(m_window.m_event.key.keysym.sym, m_ecs);
+//				    break;
+//			}
+//		}
+//	}
+//
+//	void Game::render()
+//	{
+//		// Flush renderer.
+//		SDL_SetRenderDrawColor(m_window.renderer(), 0, 0, 0, SDL_ALPHA_OPAQUE);
+//		SDL_RenderClear(m_window.renderer());
+//
+//		m_render_system.render(m_window, m_ecs);
+//
+//		// Draw everything.
+//		SDL_RenderPresent(m_window.renderer());
+//	}
 } // namespace ep
