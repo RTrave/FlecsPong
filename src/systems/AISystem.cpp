@@ -11,11 +11,18 @@
 #include "../components/AI.hpp"
 #include "../components/Ball.hpp"
 #include "../components/Position.hpp"
+#include "../components/Sprite.hpp"
 
 #include "AISystem.hpp"
 
 namespace fp
 {
+
+AISystem::AISystem(Window* window)
+{
+    m_window = window;
+}
+
 	void AISystem::update(const double time, flecs::world& ecs)
 	{
 		// Center the ai to the ball so it is always in the right position.
@@ -72,18 +79,31 @@ void aiSystem_process(flecs::iter &it, AI *ai, Position *ai_pos)
 //    printf("TEST: %f\n", ball_pos.m_x);
 
 //    auto ball_query = it.world().query<Ball, Position>();
-    it.world().each([&](flecs::entity e, Ball& ball, Position& ball_pos) {
+    AISystem * aisystem = static_cast<AISystem*>(it.ctx());
+    const auto& ball_pos = it.world().lookup("Ball").get<Position>()[0];
+    const auto& ai_spr = it.world().lookup("AIPaddle").get<Sprite>()[0];
+//    it.world().each([&](flecs::entity e, Ball& ball, Position& ball_pos) {
 //        for (auto i : it) {
-            if (ball_pos.m_y > ai_pos->m_y)
+            if (ball_pos.m_y > (ai_pos->m_y+(ai_spr.m_height/2)))
             {
                 ai_pos->m_y += 2.5;
             }
-            else if (ball_pos.m_y < ai_pos->m_y)
+            else if (ball_pos.m_y < (ai_pos->m_y+(ai_spr.m_height/2)))
             {
                 ai_pos->m_y -= 2.5;
             }
 //        }
-    });
+
+            // Lock to screen.
+            if (ai_pos->m_y < 0.0)
+            {
+                ai_pos->m_y = 0.0;
+            }
+            else if (ai_pos->m_y > (480.0 - ai_spr.m_height)) // screen heigh - sprite heigh
+            {
+                ai_pos->m_y = (480.0 - ai_spr.m_height);
+            }
+//   });
 }
 
 } // namespace ep

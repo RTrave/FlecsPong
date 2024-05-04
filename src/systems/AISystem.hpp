@@ -8,6 +8,8 @@
 #ifndef FLECSPONG_SYSTEMS_AISYSTEM_HPP_
 #define FLECSPONG_SYSTEMS_AISYSTEM_HPP_
 
+#include "../core/Window.hpp"
+
 namespace fp
 {
 	///
@@ -20,7 +22,7 @@ namespace fp
 		///
 		/// Default constructor.
 		///
-		AISystem() = default;
+		AISystem(Window* window);
 
 		///
 		/// Default destructor.
@@ -34,6 +36,11 @@ namespace fp
 		/// \param registry The registry to retrieve entities from.
 		///
 		void update(const double time, flecs::world& ecs);
+
+        ///
+        /// Pointer to window data.
+        ///
+        Window* m_window;
 	};
 void aiSystem_process(flecs::iter& it, AI* ai, Position* ai_pos);
 } // namespace ep
