@@ -56,72 +56,71 @@ namespace fp
 	void MoveSystem::update(const double time, flecs::world& world)
 	{
 		// We only need to update the player position, since the ai wil be managed by the ai system.
-		const auto player_spr = world.lookup("PlayerPaddle").get<Sprite>()[0];
-	    auto player_query = world.query<Player, Position>();
-		player_query.each([&](Player& plr, Position& pos) {
-			plr.m_movement = m_player_movement;
+		auto& plr = world.lookup("PlayerPaddle").get_mut<Player>()[0];
+        auto& player_pos = world.lookup("PlayerPaddle").get_mut<Position>()[0];
+        const auto player_spr = world.lookup("PlayerPaddle").get<Sprite>()[0];
+        plr.m_movement = m_player_movement;
 
-			if (plr.m_movement == Player::MoveDirection::NORTH)
-			{
-				pos.m_y -= 0.15 * time;
-			}
-			else if (plr.m_movement == Player::MoveDirection::SOUTH)
-			{
-				pos.m_y += 0.15 * time;
-			}
+        if (plr.m_movement == Player::MoveDirection::NORTH)
+        {
+            player_pos.m_y -= 0.15 * time;
+        }
+        else if (plr.m_movement == Player::MoveDirection::SOUTH)
+        {
+            player_pos.m_y += 0.15 * time;
+        }
 
-			// Lock to screen.
-			if (pos.m_y < 0.0)
-			{
-				pos.m_y = 0.0;
-			}
-			else if (pos.m_y > (480.0 - player_spr.m_height)) // screen width - sprite width
-			{
-				pos.m_y = (480.0 - player_spr.m_height);
-			}
-		});
+        // Lock to screen.
+        if (player_pos.m_y < 0.0)
+        {
+            player_pos.m_y = 0.0;
+        }
+        else if (player_pos.m_y > (480.0 - player_spr.m_height)) // screen width - sprite width
+        {
+            player_pos.m_y = (480.0 - player_spr.m_height);
+        }
 
 		// Next, we want to update the balls position and move it according to the directions its currently travelling.
-        const auto ball_spr = world.lookup("Ball").get<Sprite>()[0];
-		auto ball_query = world.query<Ball, Position>();
-		ball_query.each([&](Ball& ball, Position& pos) {
-			// Allow the ball to move based on a fixed-timestep loop.
-			pos.m_x += ball.m_vel_x * time;
-			pos.m_y += ball.m_vel_y * time;
+        auto& ball = world.lookup("Ball").get_mut<Ball>()[0];
+        auto& ball_pos = world.lookup("Ball").get_mut<Position>()[0];
+        const auto& ball_spr = world.lookup("Ball").get<Sprite>()[0];
 
-			// Ensure ball can be reset.
-			if (pos.m_x < 0.0)
-			{
-				// Ball passed the player paddle, reset it.
-				pos.m_x = (640.0 / 2.0) - ball_spr.m_radius*2;
-				pos.m_y = (480.0 / 2.0) - ball_spr.m_radius*2;
+        // Allow the ball to move based on a fixed-timestep loop.
+        ball_pos.m_x += ball.m_vel_x * time;
+        ball_pos.m_y += ball.m_vel_y * time;
 
-				ball.m_vel_x = randomize_velocity_dir(ball.initial_x_vel());
-				ball.m_vel_y = randomize_velocity_dir(ball.initial_y_vel());
-			}
-			else if (pos.m_x > (640.0 - ball_spr.m_radius*2)) // screen width - sprite width
-			{
-				// Ball passed the ai paddle, reset it.
-				pos.m_x = (640.0 / 2.0) - ball_spr.m_radius*2;
-				pos.m_y = (480.0 / 2.0) - ball_spr.m_radius*2;
+        // Ensure ball can be reset.
+        if (ball_pos.m_x < 0.0)
+        {
+            // Ball passed the player paddle, reset it.
+            ball_pos.m_x = (640.0 / 2.0) - ball_spr.m_radius*2;
+            ball_pos.m_y = (480.0 / 2.0) - ball_spr.m_radius*2;
 
-				ball.m_vel_x = randomize_velocity_dir(ball.initial_x_vel());
-				ball.m_vel_y = randomize_velocity_dir(ball.initial_y_vel());
-			}
+            ball.m_vel_x = randomize_velocity_dir(ball.initial_x_vel());
+            ball.m_vel_y = randomize_velocity_dir(ball.initial_y_vel());
+        }
+        else if (ball_pos.m_x > (640.0 - ball_spr.m_radius*2)) // screen width - sprite width
+        {
+            // Ball passed the ai paddle, reset it.
+            ball_pos.m_x = (640.0 / 2.0) - ball_spr.m_radius*2;
+            ball_pos.m_y = (480.0 / 2.0) - ball_spr.m_radius*2;
 
-			// Lock to screen.
-			if (pos.m_y < 0.0)
-			{
-				// Reverse ball, "bouncing" it.
-				pos.m_y = 0.0;
-				ball.m_vel_y *= -1;
-			}
-			else if (pos.m_y > (480.0 - ball_spr.m_radius*2)) // screen height - sprite height
-			{
-				// Reverse ball, "bouncing" it.
-				pos.m_y = (480.0 - ball_spr.m_radius*2);
-				ball.m_vel_y *= -1;
-			}
-		});
+            ball.m_vel_x = randomize_velocity_dir(ball.initial_x_vel());
+            ball.m_vel_y = randomize_velocity_dir(ball.initial_y_vel());
+        }
+
+        // Lock to screen.
+        if (ball_pos.m_y < 0.0)
+        {
+            // Reverse ball, "bouncing" it.
+            ball_pos.m_y = 0.0;
+            ball.m_vel_y *= -1;
+        }
+        else if (ball_pos.m_y > (480.0 - ball_spr.m_radius*2)) // screen height - sprite height
+        {
+            // Reverse ball, "bouncing" it.
+            ball_pos.m_y = (480.0 - ball_spr.m_radius*2);
+            ball.m_vel_y *= -1;
+        }
 	}
 } // namespace ep
