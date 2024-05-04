@@ -9,6 +9,7 @@
 
 #include "../components/Ball.hpp"
 #include "../components/Position.hpp"
+#include "../components/Sprite.hpp"
 #include "../Random.hpp"
 
 #include "MoveSystem.hpp"
@@ -55,7 +56,8 @@ namespace fp
 	void MoveSystem::update(const double time, flecs::world& world)
 	{
 		// We only need to update the player position, since the ai wil be managed by the ai system.
-		auto player_query = world.query<Player, Position>();
+		const auto player_spr = world.lookup("PlayerPaddle").get<Sprite>()[0];
+	    auto player_query = world.query<Player, Position>();
 		player_query.each([&](Player& plr, Position& pos) {
 			plr.m_movement = m_player_movement;
 
@@ -73,13 +75,14 @@ namespace fp
 			{
 				pos.m_y = 0.0;
 			}
-			else if (pos.m_y > (480.0 - 96.0)) // screen width - sprite width
+			else if (pos.m_y > (480.0 - player_spr.m_height)) // screen width - sprite width
 			{
-				pos.m_y = (480.0 - 96.0);
+				pos.m_y = (480.0 - player_spr.m_height);
 			}
 		});
 
 		// Next, we want to update the balls position and move it according to the directions its currently travelling.
+        const auto ball_spr = world.lookup("Ball").get<Sprite>()[0];
 		auto ball_query = world.query<Ball, Position>();
 		ball_query.each([&](Ball& ball, Position& pos) {
 			// Allow the ball to move based on a fixed-timestep loop.
@@ -90,17 +93,17 @@ namespace fp
 			if (pos.m_x < 0.0)
 			{
 				// Ball passed the player paddle, reset it.
-				pos.m_x = (640.0 / 2.0) - 16.0;
-				pos.m_y = (480.0 / 2.0) - 16.0;
+				pos.m_x = (640.0 / 2.0) - ball_spr.m_radius*2;
+				pos.m_y = (480.0 / 2.0) - ball_spr.m_radius*2;
 
 				ball.m_vel_x = randomize_velocity_dir(ball.initial_x_vel());
 				ball.m_vel_y = randomize_velocity_dir(ball.initial_y_vel());
 			}
-			else if (pos.m_x > (640.0 - 16.0)) // screen width - sprite width
+			else if (pos.m_x > (640.0 - ball_spr.m_radius*2)) // screen width - sprite width
 			{
 				// Ball passed the ai paddle, reset it.
-				pos.m_x = (640.0 / 2.0) - 16.0;
-				pos.m_y = (480.0 / 2.0) - 16.0;
+				pos.m_x = (640.0 / 2.0) - ball_spr.m_radius*2;
+				pos.m_y = (480.0 / 2.0) - ball_spr.m_radius*2;
 
 				ball.m_vel_x = randomize_velocity_dir(ball.initial_x_vel());
 				ball.m_vel_y = randomize_velocity_dir(ball.initial_y_vel());
@@ -113,10 +116,10 @@ namespace fp
 				pos.m_y = 0.0;
 				ball.m_vel_y *= -1;
 			}
-			else if (pos.m_y > (480.0 - 16.0)) // screen height - sprite height
+			else if (pos.m_y > (480.0 - ball_spr.m_radius*2)) // screen height - sprite height
 			{
 				// Reverse ball, "bouncing" it.
-				pos.m_y = (480.0 - 16.0);
+				pos.m_y = (480.0 - ball_spr.m_radius*2);
 				ball.m_vel_y *= -1;
 			}
 		});
