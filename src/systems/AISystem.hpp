@@ -29,20 +29,14 @@ namespace fp
 		///
 		~AISystem() = default;
 
-		///
-		/// Process events and update entities accordingly.
-		///
-		/// \param time Update loop delta time.
-		/// \param registry The registry to retrieve entities from.
-		///
-		void update(const double time, flecs::world& ecs);
-
         ///
         /// Pointer to window data.
         ///
         Window* m_window;
 	};
-void aiSystem_process(flecs::iter& it, AI* ai, Position* ai_pos);
+
+	void aiSystem_process(flecs::iter& it, AI* ai, Position* ai_pos);
+
 } // namespace ep
 
 #endif

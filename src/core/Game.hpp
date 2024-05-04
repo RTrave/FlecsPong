@@ -57,23 +57,6 @@ namespace fp
 		Game() = delete;
 
 		///
-		/// Recieve and process game events.
-		///
-//		void events();
-
-		///
-		/// Process game data.
-		///
-		/// \param time The DeltaTime or similar from fixed-timestep loop.
-		///
-//		void update(const double time);
-
-		///
-		/// Render everything to the window.
-		///
-//		void render();
-
-		///
 		/// Our main window.
 		///
 		Window m_window;
@@ -84,14 +67,9 @@ namespace fp
 		flecs::world m_ecs;
 
 		///
-		/// Default event dispatcher.
-		///
-//		entt::dispatcher m_dispatcher;
-
-		///
 		/// The AI system.
 		///
-		AISystem m_ai_system;
+		AISystem *m_ai_system;
 
 		///
 		/// The collision system.

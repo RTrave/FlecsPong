@@ -13,8 +13,6 @@
 
 #include "../core/Window.hpp"
 #include "../components/Player.hpp"
-#include "../events/KeyDown.hpp"
-#include "../events/KeyUp.hpp"
 
 namespace fp
 {
@@ -34,32 +32,6 @@ public:
     /// Default destructor.
     ///
     ~MoveSystem() = default;
-
-    ///
-    /// Called when a key is pressed.
-    ///
-    /// \param key_down Key Down Event.
-    ///
-    void on_key_down(const KeyDown &key_down, flecs::world &world) noexcept;
-
-    ///
-    /// Called when a key is released.
-    ///
-    /// \param key_up Key Up Event.
-    ///
-    void on_key_up(const KeyUp &key_up, flecs::world &world) noexcept;
-
-    ///
-    /// Process events and update entities accordingly.
-    ///
-    /// \param time DeltaTime or something similar from fixed-timestep gameloop.
-    /// \param registry The registry to retrieve entities from.
-    ///
-    void update(const double time, flecs::world &world);
-    flecs::system m_system;
-    void init(flecs::world *world);
-    flecs::world *m_world;
-    void processPlayer(flecs::iter &it, Player *plr, Position *pos);
 
     ///
     /// Current movement of player.
@@ -90,7 +62,6 @@ public:
     Window* m_window;
 };
 
-//void inputSystem_init(Window *window);
 void inputSystem_process(flecs::iter &it, Player *player, Position *pos);
 void moveSystem_processPlayer(flecs::iter &it, Player *plr, Position *pos);
 void moveSystem_processBall(flecs::iter &it, Ball *ball, Position *pos);

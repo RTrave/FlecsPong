@@ -15,7 +15,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
-#include "../events/KeyDown.hpp"
+//#include "../events/KeyDown.hpp"
 
 namespace fp
 {
@@ -46,16 +46,14 @@ namespace fp
 		void create(std::string_view title, const int w, const int h, std::uint32_t flags);
 
 		///
-		/// Called when a key is pressed.
-		///
-		/// \param key_down Key Down Event.
-		///
-		void on_key_down(const KeyDown& key_down) noexcept;
-
-		///
 		/// Close the window.
 		///
 		void close() noexcept;
+
+        ///
+        /// Close the window for real.
+        ///
+        void destroy() noexcept;
 
 		///
 		/// Is the window open?

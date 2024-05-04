@@ -29,14 +29,6 @@ namespace fp
 		///
 		~RenderSystem() = default;
 
-		///
-		/// Renders all entities.
-		///
-		/// \param window The Window to render to.
-		/// \param world The registry to retrieve entities from.
-		///
-		void render(Window& window, flecs::world& world);
-
         ///
         /// Pointer to window data.
         ///

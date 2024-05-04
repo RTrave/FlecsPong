@@ -18,8 +18,6 @@ namespace fp
         flecs::entity player;
         flecs::entity ai;
         flecs::entity ball;
-
-//        flecs::world* world;
 	};
 
 	///
@@ -38,16 +36,11 @@ namespace fp
 		/// Default destructor.
 		///
 		~CollisionSystem() = default;
-
-		///
-		/// Process events and update entities accordingly.
-		///
-		/// \param time DeltaTime or something similar from fixed-timestep gameloop.
-		/// \param holder Used instead of something like a Dynamic Tree which is out of scope for this.
-		///
-		void update(const double time, CollisionHolder& holder);
 	};
-void collisionSystem_process(flecs::iter& it, Ball* ball, Position* ball_pos, Sprite* ball_spr);
+
+
+	void collisionSystem_process(flecs::iter& it, Ball* ball, Position* ball_pos, Sprite* ball_spr);
+
 } // namespace ep
 
 #endif

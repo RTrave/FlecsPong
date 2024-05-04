@@ -17,8 +17,6 @@ namespace fp
 
 	Window::~Window()
 	{
-		SDL_DestroyRenderer(m_renderer);
-		SDL_DestroyWindow(m_window);
 	}
 
 	void Window::create(std::string_view title, const int w, const int h, std::uint32_t flags)
@@ -38,18 +36,16 @@ namespace fp
 		}
 	}
 
-	void Window::on_key_down(const KeyDown& key_down) noexcept
-	{
-		if (key_down.m_keycode == SDLK_ESCAPE)
-		{
-			close();
-		}
-	}
-
 	void Window::close() noexcept
 	{
 		m_is_open = false;
 	}
+
+    void Window::destroy() noexcept
+    {
+        SDL_DestroyRenderer(m_renderer);
+        SDL_DestroyWindow(m_window);
+    }
 
 	const bool Window::is_open() const noexcept
 	{
