@@ -5,14 +5,14 @@
 /// Refer to LICENSE.txt for more details.
 ///
 
-#ifndef FLECSPONG_SYSTEMS_MOVESYSTEM_HPP_
-#define FLECSPONG_SYSTEMS_MOVESYSTEM_HPP_
+#ifndef FLECSPONG_SYSTEMS_INPUTSYSTEM_HPP_
+#define FLECSPONG_SYSTEMS_INPUTSYSTEM_HPP_
 
 #include <flecs.h>
 #include <SDL2/SDL_events.h>
 
 #include "../core/Window.hpp"
-#include "../components/Player.hpp"
+#include "../components/All.hpp"
 
 namespace fp
 {
@@ -20,27 +20,26 @@ namespace fp
 /// This class will take data from the appropriate components
 /// and update the position based on input.
 ///
-class MoveSystem final
+class InputSystem final
 {
 public:
     ///
     /// Default constructor.
     ///
-    MoveSystem() = default;
+    InputSystem(Window* window);
 
     ///
     /// Default destructor.
     ///
-    ~MoveSystem() = default;
+    ~InputSystem() = default;
 
     ///
-    /// Current movement of player.
+    /// Pointer to window data.
     ///
-    Player::MoveDirection m_player_movement;
+    Window* m_window;
 };
 
-void moveSystem_processPlayer(flecs::iter &it, Player *plr, Position *pos);
-void moveSystem_processBall(flecs::iter &it, Ball *ball, Position *pos);
+void inputSystem_process(flecs::iter &it, Player *player, Position *pos);
 
 } // namespace ep
 

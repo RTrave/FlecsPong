@@ -12,6 +12,7 @@
 #include <flecs.h>
 
 #include "../components/All.hpp"
+#include "../systems/InputSystem.hpp"
 #include "../systems/AISystem.hpp"
 #include "../systems/CollisionSystem.hpp"
 #include "../systems/MoveSystem.hpp"
