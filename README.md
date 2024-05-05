@@ -1,6 +1,10 @@
 # FlecsPong
 
-FLECS port of https://github.com/reworks-org/EnttPong
+FLECS port of EnttPong
+
+https://github.com/reworks-org/EnttPong
+
+https://github.com/SanderMertens/flecs
 
 ## v1.x (enttpong-arch branch)
 
