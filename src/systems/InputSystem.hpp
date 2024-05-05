@@ -11,11 +11,14 @@
 #include <flecs.h>
 #include <SDL2/SDL_events.h>
 
-#include "../core/Window.hpp"
 #include "../components/All.hpp"
+//#include "../core/Game.hpp"
+#include "../core/Window.hpp"
 
 namespace fp
 {
+
+class Game;
 ///
 /// This class will take data from the appropriate components
 /// and update the position based on input.
@@ -26,7 +29,7 @@ public:
     ///
     /// Default constructor.
     ///
-    InputSystem(Window* window);
+    InputSystem(Game* game, Window* window);
 
     ///
     /// Default destructor.
@@ -37,6 +40,11 @@ public:
     /// Pointer to window data.
     ///
     Window* m_window;
+
+    ///
+    /// Pointer to main Game object.
+    ///
+    Game* m_game;
 };
 
 void inputSystem_process(flecs::iter &it, Player *player, Paddle *paddle, Velocity *velocity);

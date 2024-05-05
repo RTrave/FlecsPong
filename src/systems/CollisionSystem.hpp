@@ -17,7 +17,8 @@ struct CollisionHolder
 {
     flecs::entity player1;
     flecs::entity player2;
-    flecs::entity ball;
+    int score_player1;
+    int score_player2;
 };
 
 ///

@@ -32,22 +32,24 @@ void renderSystem_flush(flecs::iter &it)
 void renderSystem_process(flecs::iter &it, Sprite *spr, Position *pos)
 {
     RenderSystem * render = static_cast<RenderSystem*>(it.ctx());
-    if (spr->m_radius != 0)
-      {
-          // We use SDL2_gfx to make drawing circles easier.
-          filledCircleRGBA(render->m_window->renderer(), static_cast<Sint16>(pos->m_x), static_cast<Sint16>(pos->m_y), spr->m_radius, spr->m_colour.r, spr->m_colour.g, spr->m_colour.b, spr->m_colour.a);
-      }
-      else
-      {
-          // First we set the rectangle fill colour to that of the spritecomponents.
-          SDL_SetRenderDrawColor(render->m_window->renderer(), spr->m_colour.r, spr->m_colour.g, spr->m_colour.b, spr->m_colour.a);
+    for (auto i : it) {
+        if (spr[i].m_radius != 0)
+          {
+              // We use SDL2_gfx to make drawing circles easier.
+              filledCircleRGBA(render->m_window->renderer(), static_cast<Sint16>(pos[i].m_x), static_cast<Sint16>(pos[i].m_y), spr[i].m_radius, spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b, spr[i].m_colour.a);
+          }
+          else
+          {
+              // First we set the rectangle fill colour to that of the spritecomponents.
+              SDL_SetRenderDrawColor(render->m_window->renderer(), spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b, spr[i].m_colour.a);
 
-          // Then we create the actual rectangle.
-          const SDL_Rect draw_rect {static_cast<int>(pos->m_x), static_cast<int>(pos->m_y), spr->m_width, spr->m_height};
+              // Then we create the actual rectangle.
+              const SDL_Rect draw_rect {static_cast<int>(pos[i].m_x), static_cast<int>(pos[i].m_y), spr[i].m_width, spr[i].m_height};
 
-          // Now the rectangle gets renderered with the appropriate colours and position data to the window.
-          SDL_RenderFillRect(render->m_window->renderer(), &draw_rect);
-      }
+              // Now the rectangle gets renderered with the appropriate colours and position data to the window.
+              SDL_RenderFillRect(render->m_window->renderer(), &draw_rect);
+          }
+    }
 }
 
 void renderSystem_draw(flecs::iter &it)

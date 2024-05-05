@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 
 #include "../components/All.hpp"
+#include "../systems/InputSystem.hpp"
 
 #include "../Log.hpp"
 
@@ -57,82 +58,38 @@ namespace fp
         player1.add<Player>();
         player2.add<AI>();
 
-//		auto player = m_ecs.entity("Player")
-//		        .add<Player>()
-//            .set([](Sprite &spr, Position &pos)
-//        {
-//		    spr.m_width = 12;
-//		    spr.m_height = 96;
-//		    spr.m_colour = SDL_Colour{255, 255, 255, 255};
-//		    spr.m_radius = 0;
-//            pos.m_x = 20.0;
-//            pos.m_y = 20.0;
-////            p.m_movement = Paddle::MoveDirection::STOPPED;
-//        })
-//		.set([](Velocity &vel, Paddle &pad)
-//        {
-//		    vel.m_vel_x = 0.0;
-//		    vel.m_vel_y = 0.0;
-//		    pad.m_velocity = 0.2;
-//		    pad.m_movement = Paddle::MoveDirection::STOPPED;
-//        });
-//		auto ai = m_ecs.entity("AIPaddle");
-//        ai.set([](Sprite &s)
-//        {
-//            s.m_width = 12;
-//            s.m_height = 96;
-//            s.m_colour = SDL_Colour{255, 255, 255, 255};
-//            s.m_radius = 0;
-//        })
-//		        .set<Position>({w - 32.0, 20.0})
-//		        .add<AI>()
-//        .set([](Velocity &vel, Paddle &pad)
-//        {
-//            vel.m_vel_x = 0.0;
-//            vel.m_vel_y = 0.0;
-//            pad.m_velocity = 0.2;
-//            pad.m_movement = Paddle::MoveDirection::STOPPED;
-//        });
-		auto ball = m_ecs.entity("Ball")
-                .set<Position>({(w / 2.0) - 16.0, (h / 4.0) - 16.0})
-                .set<Velocity>({0.25, 0.25})
-                .set<Ball>({0, 0.25, 0.25})
-                .set([](Sprite &spr)
-            {
-                spr.m_width = 0;
-                spr.m_height = 8;
-                spr.m_colour = SDL_Colour{255, 255, 255, 255};
-                spr.m_radius = 8;
-            });
-//		ball.set([](Sprite &s)
-//                    {
-//                        s.m_width = 0;
-//                        s.m_height = 8;
-//                        s.m_colour = SDL_Colour{255, 255, 255, 255};
-//                        s.m_radius = 8;
-//                    })
-//		        .set<Position>({(w / 2.0) - 16.0, (h / 4.0) - 16.0})
-//		        .set([](Velocity &vel)
-//		        {
-//		            vel.m_vel_x = 0.25;
-//		            vel.m_vel_y = 0.25;
-//		        })
-//		        .set<Ball>({0, 0.25, 0.25});
+        createBall();
+//        auto ball = m_ecs.entity("Ball")
+//                .set<Position>({(w / 2.0) - 16.0, (h / 4.0) - 16.0})
+//                .set<Velocity>({0.25, 0.25})
+//                .set<Ball>({0, 0.25, 0.25})
+//                .set([](Sprite &spr)
+//            {
+//                spr.m_width = 0;
+//                spr.m_height = 8;
+//                spr.m_colour = SDL_Colour{255, 255, 255, 255};
+//                spr.m_radius = 8;
+//            });
 
 //		// Set up collideables
 		m_collideables.player1 = player1;
 		m_collideables.player2 = player2;
-		m_collideables.ball = ball;
+        m_collideables.score_player1 = 0;
+        m_collideables.score_player2 = 0;
 
 		// Set up Input and AI systems (updating Velocity)
-		m_input_system = new InputSystem(&m_window);
+		m_input_system = new InputSystem(this, &m_window);
 		m_ecs.system<Player, Paddle, Velocity>("InputSystem")
                 .kind(flecs::PreUpdate)
                 .ctx(static_cast<void*>(m_input_system))
+//                .interval(10.0)
+//                .rate(2)
                 .iter(inputSystem_process);
         m_ai_system = new AISystem(&m_window);
         m_ecs.system<AI, Paddle, Velocity, Position, Sprite>("AISystem")
                 .ctx(static_cast<void*>(m_ai_system))
+                .interval(10.0)
+//                .rate(10)
                 .iter(aiSystem_process);
 
 //		m_ecs.system<Player, Position>("MoveSystemPlayer")
@@ -165,6 +122,8 @@ namespace fp
 
 	Game::~Game() noexcept
 	{
+        printf("\nFinal score:\nPlayer1 %d-%d Player2\n",
+                m_collideables.score_player1, m_collideables.score_player2);
 	    delete m_input_system;
 	    delete m_render_system;
 	    delete m_ai_system;
@@ -209,5 +168,25 @@ namespace fp
         SDL_Delay(200);
 		return EXIT_SUCCESS;
 	}
+
+	int ball_id = 1;
+
+flecs::entity Game::createBall()
+{
+    std::string ball_name("Ball");
+    ball_name += std::to_string(ball_id++);
+    printf("New ball: %s\n", ball_name.c_str());
+    return m_ecs.entity(ball_name.c_str())
+            .set<Position>({(640 / 2.0) - 16.0, (480 / 4.0) - 16.0})
+            .set<Velocity>({0.20, 0.20})
+            .set<Ball>({0, 0.20, 0.20})
+            .set([](Sprite &spr)
+        {
+            spr.m_width = 0;
+            spr.m_height = 8;
+            spr.m_colour = SDL_Colour{255, 255, 255, 255};
+            spr.m_radius = 8;
+        });
+}
 
 } // namespace ep

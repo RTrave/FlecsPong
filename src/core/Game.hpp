@@ -12,7 +12,7 @@
 #include <flecs.h>
 
 #include "../components/All.hpp"
-#include "../systems/InputSystem.hpp"
+//#include "../systems/InputSystem.hpp"
 #include "../systems/AISystem.hpp"
 #include "../systems/CollisionSystem.hpp"
 #include "../systems/MoveSystem.hpp"
@@ -22,6 +22,9 @@
 
 namespace fp
 {
+
+class InputSystem;
+
 	///
 	/// This class will manage our game data and game loop.
 	/// Along with the application instance.
@@ -50,6 +53,8 @@ namespace fp
 		/// \return Returns game exit code.
 		///
 		[[maybe_unused]] const int run();
+
+		flecs::entity createBall();
 
 	private:
 		///

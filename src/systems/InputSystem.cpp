@@ -10,6 +10,7 @@
 #include "../components/Ball.hpp"
 #include "../components/Position.hpp"
 #include "../Random.hpp"
+#include "../core/Game.hpp"
 
 #include "InputSystem.hpp"
 
@@ -17,15 +18,16 @@ namespace fp
 {
 
 
-InputSystem::InputSystem(Window *window)
+InputSystem::InputSystem(Game* game, Window *window)
 {
+    m_game = game;
     m_window = window;
 }
 
 void inputSystem_process(flecs::iter &it, Player *player, Paddle *paddle, Velocity *velocity)
 {
     InputSystem * input = static_cast<InputSystem*>(it.ctx());
-    auto ball = it.world().lookup("Ball");
+    auto ball = it.world().lookup("Ball1");
     const auto& ball_c = ball.get<Ball>()[0];
     // Process all user and system events.
     while (SDL_PollEvent(&input->m_window->m_event) != 0)
@@ -52,6 +54,10 @@ void inputSystem_process(flecs::iter &it, Player *player, Paddle *paddle, Veloci
                     case SDLK_n:
                         ball.set<Velocity>({ball_c.m_initial_vel_x, ball_c.m_initial_vel_y})
                         .set<Position>({(640 / 2.0) - 16.0, (480 / 2.0) - 16.0});
+                        break;
+
+                    case SDLK_b:
+                        input->m_game->createBall();
                         break;
 
                     case SDLK_ESCAPE:
