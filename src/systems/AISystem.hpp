@@ -12,30 +12,31 @@
 
 namespace fp
 {
-	///
-	/// This system will ensure the ai is always following the ball, by centering the ai paddle
-	/// onto the ball.
-	///
-	class AISystem final
-	{
-	public:
-		///
-		/// Default constructor.
-		///
-		AISystem(Window* window);
+///
+/// This system will ensure the ai is always following the ball, by centering the ai paddle
+/// onto the ball.
+///
+class AISystem final
+{
+public:
+    ///
+    /// Default constructor.
+    ///
+    AISystem(Window *window);
 
-		///
-		/// Default destructor.
-		///
-		~AISystem() = default;
+    ///
+    /// Default destructor.
+    ///
+    ~AISystem() = default;
 
-        ///
-        /// Pointer to window data.
-        ///
-        Window* m_window;
-	};
+    ///
+    /// Pointer to window data.
+    ///
+    Window *m_window;
+};
 
-	void aiSystem_process(flecs::iter& it, AI* ai, Position* ai_pos);
+void aiSystem_process(flecs::iter &it, AI *ai, Paddle *pad,
+                      Velocity *vel, Position *pos, Sprite *spr);
 
 } // namespace ep
 

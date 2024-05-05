@@ -8,10 +8,7 @@
 #include <flecs.h>
 
 
-#include "../components/AI.hpp"
-#include "../components/Ball.hpp"
-#include "../components/Position.hpp"
-#include "../components/Sprite.hpp"
+#include "../components/All.hpp"
 
 #include "AISystem.hpp"
 
@@ -23,31 +20,21 @@ AISystem::AISystem(Window* window)
     m_window = window;
 }
 
-void aiSystem_process(flecs::iter &it, AI *ai, Position *ai_pos)
+void aiSystem_process(flecs::iter &it, AI *ai, Paddle *pad, Velocity *vel,
+                      Position *pos, Sprite *spr)
 {
-    ai->m_x = ai_pos->m_x;
-    ai->m_y = ai_pos->m_y;
-
-//    AISystem * aisystem = static_cast<AISystem*>(it.ctx()); //TODO: use window size
     const auto& ball_pos = it.world().lookup("Ball").get<Position>()[0];
-    const auto& ai_spr = it.world().lookup("AIPaddle").get<Sprite>()[0];
-    if (ball_pos.m_y > (ai_pos->m_y+(ai_spr.m_height/2)))
+    if (ball_pos.m_y > (pos->m_y+(3*spr->m_height/4)))
     {
-        ai_pos->m_y += 2.5;
+        vel->m_vel_y = pad->m_velocity;
     }
-    else if (ball_pos.m_y < (ai_pos->m_y+(ai_spr.m_height/2)))
+    else if (ball_pos.m_y < (pos->m_y+(spr->m_height/4)))
     {
-        ai_pos->m_y -= 2.5;
+        vel->m_vel_y = (-pad->m_velocity);
     }
-
-    // Lock to screen.
-    if (ai_pos->m_y < 0.0)
+    else
     {
-        ai_pos->m_y = 0.0;
-    }
-    else if (ai_pos->m_y > (480.0 - ai_spr.m_height)) // screen heigh - sprite heigh
-    {
-        ai_pos->m_y = (480.0 - ai_spr.m_height);
+        vel->m_vel_y = 0.0;
     }
 }
 

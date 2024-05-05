@@ -26,63 +26,124 @@ namespace fp
 
 		m_window.create(title, w, h, flags);
 
-		// Here, we are creating the entities using EnTT and attaching the relevant components and tags.
-		// We can invoke the constructor of the component or tag in the assign() and attach() methods of the registry.
-		auto player_paddle = m_ecs.entity("PlayerPaddle")
-		        .set([](Sprite &s, Position &pos, Player &p)
+		// Here, we are creating the entities using Flecs and
+		//attaching the relevant components and tags.
+		auto player1 = m_ecs.entity("Player1")
+		        .set<Position>({20.0, 20.0})
+		        .set<Velocity>({0.0, 0.0})
+                .set([](Sprite &spr, Paddle &pad)
             {
-                s.m_width = 12;
-                s.m_height = 96;
-                s.m_colour = SDL_Colour{255, 255, 255, 255};
-                s.m_radius = 0;
-                pos.m_x = 20.0;
-                pos.m_y = 20.0;
-                p.m_movement = Player::MoveDirection::STOPPED;
+                spr.m_width = 12;
+                spr.m_height = 96;
+                spr.m_colour = SDL_Colour{255, 255, 255, 255};
+                spr.m_radius = 0;
+                pad.m_velocity = 0.2;
+                pad.m_movement = Paddle::MoveDirection::STOPPED;
             });
-		auto ai_paddle = m_ecs.entity("AIPaddle");
-        ai_paddle.set([](Sprite &s)
-                    {
-                        s.m_width = 12;
-                        s.m_height = 96;
-                        s.m_colour = SDL_Colour{255, 255, 255, 255};
-                        s.m_radius = 0;
-                    })
-		        .set<Position>({w - 30.0, 20.0})
-		        .set<AI>({w - 30.0, 20.0});
+        auto player2 = m_ecs.entity("Player2")
+                .set<Position>({w - 32.0, 20.0})
+                .set<Velocity>({0.0, 0.0})
+                .set([](Sprite &spr, Paddle &pad)
+            {
+                spr.m_width = 12;
+                spr.m_height = 96;
+                spr.m_colour = SDL_Colour{255, 255, 255, 255};
+                spr.m_radius = 0;
+                pad.m_velocity = 0.2;
+                pad.m_movement = Paddle::MoveDirection::STOPPED;
+            });
+
+        // Then we add Player or AI component
+        player1.add<Player>();
+        player2.add<AI>();
+
+//		auto player = m_ecs.entity("Player")
+//		        .add<Player>()
+//            .set([](Sprite &spr, Position &pos)
+//        {
+//		    spr.m_width = 12;
+//		    spr.m_height = 96;
+//		    spr.m_colour = SDL_Colour{255, 255, 255, 255};
+//		    spr.m_radius = 0;
+//            pos.m_x = 20.0;
+//            pos.m_y = 20.0;
+////            p.m_movement = Paddle::MoveDirection::STOPPED;
+//        })
+//		.set([](Velocity &vel, Paddle &pad)
+//        {
+//		    vel.m_vel_x = 0.0;
+//		    vel.m_vel_y = 0.0;
+//		    pad.m_velocity = 0.2;
+//		    pad.m_movement = Paddle::MoveDirection::STOPPED;
+//        });
+//		auto ai = m_ecs.entity("AIPaddle");
+//        ai.set([](Sprite &s)
+//        {
+//            s.m_width = 12;
+//            s.m_height = 96;
+//            s.m_colour = SDL_Colour{255, 255, 255, 255};
+//            s.m_radius = 0;
+//        })
+//		        .set<Position>({w - 32.0, 20.0})
+//		        .add<AI>()
+//        .set([](Velocity &vel, Paddle &pad)
+//        {
+//            vel.m_vel_x = 0.0;
+//            vel.m_vel_y = 0.0;
+//            pad.m_velocity = 0.2;
+//            pad.m_movement = Paddle::MoveDirection::STOPPED;
+//        });
 		auto ball = m_ecs.entity("Ball")
-		        .set([](Sprite &s)
-                    {
-                        s.m_width = 0;
-                        s.m_height = 0;
-                        s.m_colour = SDL_Colour{255, 255, 255, 255};
-                        s.m_radius = 8;
-                    })
-//		        .set<Sprite>({8, SDL_Colour {255, 255, 255, 255}})
-		        .set<Position>({(w / 2.0) - 16.0, (h / 2.0) - 16.0})
-		        .set<Ball>({0.15, 0.15, 0, 0.15, 0.15});
+                .set<Position>({(w / 2.0) - 16.0, (h / 4.0) - 16.0})
+                .set<Velocity>({0.25, 0.25})
+                .set<Ball>({0, 0.25, 0.25})
+                .set([](Sprite &spr)
+            {
+                spr.m_width = 0;
+                spr.m_height = 8;
+                spr.m_colour = SDL_Colour{255, 255, 255, 255};
+                spr.m_radius = 8;
+            });
+//		ball.set([](Sprite &s)
+//                    {
+//                        s.m_width = 0;
+//                        s.m_height = 8;
+//                        s.m_colour = SDL_Colour{255, 255, 255, 255};
+//                        s.m_radius = 8;
+//                    })
+//		        .set<Position>({(w / 2.0) - 16.0, (h / 4.0) - 16.0})
+//		        .set([](Velocity &vel)
+//		        {
+//		            vel.m_vel_x = 0.25;
+//		            vel.m_vel_y = 0.25;
+//		        })
+//		        .set<Ball>({0, 0.25, 0.25});
 
 //		// Set up collideables
-		m_collideables.ai        = ai_paddle;
-		m_collideables.player    = player_paddle;
-		m_collideables.ball      = ball;
+		m_collideables.player1 = player1;
+		m_collideables.player2 = player2;
+		m_collideables.ball = ball;
 
+		// Set up Input and AI systems (updating Velocity)
 		m_input_system = new InputSystem(&m_window);
-		m_ecs.system<Player, Position>("InputSystem")
+		m_ecs.system<Player, Paddle, Velocity>("InputSystem")
                 .kind(flecs::PreUpdate)
                 .ctx(static_cast<void*>(m_input_system))
                 .iter(inputSystem_process);
-
-		m_ecs.system<Player, Position>("MoveSystemPlayer")
-		        .iter(moveSystem_processPlayer);
-        m_ecs.system<Ball, Position>("MoveSystemBall")
-                .iter(moveSystem_processBall);
-
         m_ai_system = new AISystem(&m_window);
-        m_ecs.system<AI, Position>("MoveSystemAI")
+        m_ecs.system<AI, Paddle, Velocity, Position, Sprite>("AISystem")
                 .ctx(static_cast<void*>(m_ai_system))
                 .iter(aiSystem_process);
 
-        m_ecs.system<Ball, Position, Sprite>("CollisionSystem")
+//		m_ecs.system<Player, Position>("MoveSystemPlayer")
+//		        .iter(moveSystem_processPlayer);
+//        m_ecs.system<Ball, Position>("MoveSystemBall")
+//                .iter(moveSystem_processBall);
+        m_ecs.system<Velocity, Position, Sprite>("MovePlayer")
+                .iter(moveSystem_process);
+
+
+        m_ecs.system<Ball, Position, Velocity, Sprite>("CollisionSystem")
                 .kind(flecs::PostUpdate)
                 .ctx(static_cast<void*>(&m_collideables))
                 .iter(collisionSystem_process);

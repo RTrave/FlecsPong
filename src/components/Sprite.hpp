@@ -19,12 +19,12 @@ namespace fp
     struct Sprite
 	{
 		///
-		/// Stores how wide the rectangle is.
+		/// Stores how wide the rectangle is (0 means a Circle).
 		///
 		int m_width;
 
 		///
-		/// Stores how high the rectangle is.
+		/// Stores how high the rectangle is (radius in case of circle).
 		///
 		int m_height;
 

@@ -13,87 +13,36 @@
 
 #include "MoveSystem.hpp"
 
-[[nodiscard]] const double randomize_velocity_dir(const double vel)
-{
-	switch (fp::random(0, 1))
-	{
-		case 0:
-			return vel;
-			break;
-
-		case 1:
-			return -vel;
-			break;
-	}
-	return 0;
-}
-
 namespace fp
 {
 
-void moveSystem_processPlayer(flecs::iter &it, Player* plr, Position* pos)
+void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, Sprite *spr)
 {
     const double time = it.delta_time();
 
-        if (plr->m_movement == Player::MoveDirection::NORTH)
-        {
-            pos->m_y -= 0.15 * time;
-        }
-        else if (plr->m_movement == Player::MoveDirection::SOUTH)
-        {
-            pos->m_y += 0.15 * time;
-        }
+    // Iterate entities
+    for (auto i : it) {
+
+        pos[i].m_x += vel[i].m_vel_x * time;
+        pos[i].m_y += vel[i].m_vel_y * time;
 
         // Lock to screen.
-        if (pos->m_y < 0.0)
+        if (pos[i].m_y < 0.0)
         {
-            pos->m_y = 0.0;
+            pos[i].m_y = 0.0;
+            if(it.entity(i).has<Ball>())
+                vel[i].m_vel_y = -vel[i].m_vel_y;
+            else
+                vel[i].m_vel_y = 0.0;
         }
-        else if (pos->m_y > (480.0 - 96.0)) // screen width - sprite width
+        else if (pos[i].m_y > (480.0 - spr[i].m_height)) // screen width - sprite width
         {
-            pos->m_y = (480.0 - 96.0);
+            pos[i].m_y = (480.0 - spr[i].m_height);
+            if(it.entity(i).has<Ball>())
+                vel[i].m_vel_y = -vel[i].m_vel_y;
+            else
+                vel[i].m_vel_y = 0.0;
         }
-
-}
-
-void moveSystem_processBall(flecs::iter &it, Ball *ball, Position *pos)
-{
-    const double time = it.delta_time();
-    pos->m_x += ball->m_vel_x * time;
-    pos->m_y += ball->m_vel_y * time;
-
-    // Ensure ball can be reset.
-    if (pos->m_x < 0.0)
-    {
-        // Ball passed the player paddle, reset it.
-        pos->m_x = (640.0 / 2.0) - 16.0;
-        pos->m_y = (480.0 / 2.0) - 16.0;
-
-        ball->m_vel_x = randomize_velocity_dir(ball->initial_x_vel());
-        ball->m_vel_y = randomize_velocity_dir(ball->initial_y_vel());
-    }
-    else if (pos->m_x > (640.0 - 16.0)) // screen width - sprite width
-    {
-        // Ball passed the ai paddle, reset it.
-        pos->m_x = (640.0 / 2.0) - 16.0;
-        pos->m_y = (480.0 / 2.0) - 16.0;
-
-        ball->m_vel_x = randomize_velocity_dir(ball->initial_x_vel());
-        ball->m_vel_y = randomize_velocity_dir(ball->initial_y_vel());
-    }
-
-    // Lock to screen.
-    if (pos->m_y < 0.0)
-    {
-        // Reverse ball, "bouncing" it.
-        pos->m_y = 0.0;
-        ball->m_vel_y *= -1;
-    }
-    else if (pos->m_y > (480.0 - 16.0)) // screen height - sprite height
-    {
-        // Reverse ball, "bouncing" it.
-        pos->m_y = (480.0 - 16.0);
-        ball->m_vel_y *= -1;
     }
 }
 

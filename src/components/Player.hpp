@@ -13,46 +13,45 @@ namespace fp
 	///
 	/// Makes an entity a ball.
 	///
-	class Player final
+	struct Player
 	{
-	public:
+//	public:
 		///
 		/// Enum representing movement state.
 		///
-		enum class MoveDirection : short
-		{
-			STOPPED,
-			NORTH,
-			SOUTH
-		};
+//		enum class MoveDirection : short
+//		{
+//			STOPPED,
+//			NORTH,
+//			SOUTH
+//		};
 
 		///
 		/// Default constructor.
 		///
-		Player() noexcept;
+//		Player() noexcept = default;
 
-		///
-		/// Move constructor.
-		///
-		Player(Player&&) noexcept;
+//		///
+//		/// Move constructor.
+//		///
+//		Player(Player&&) noexcept;
 
 		///
 		/// Default destructor.
 		///
-		~Player() noexcept = default;
+//		~Player() noexcept = default;
 
-		///
-		/// Move assignment overload.
-		///
-		Player& operator=(Player&&) noexcept;
+//		///
+//		/// Move assignment overload.
+//		///
+//		Player& operator=(Player&&) noexcept;
 
-	public:
 		///
 		/// \brief Player movement direction.
 		///
 		/// False is down, True is up.
 		///
-		MoveDirection m_movement;
+//		MoveDirection m_movement;
 	};
 } // namespace ep
 

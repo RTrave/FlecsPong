@@ -15,15 +15,15 @@ namespace fp
 	///
     struct AI
 	{
-		///
-		/// x pos on screen.
-		///
-		double m_x;
-
-		///
-		/// y pos on screen.
-		///
-		double m_y;
+//		///
+//		/// x pos on screen.
+//		///
+//		double m_x;
+//
+//		///
+//		/// y pos on screen.
+//		///
+//		double m_y;
 	};
 } // namespace ep
 

@@ -39,7 +39,7 @@ public:
     Window* m_window;
 };
 
-void inputSystem_process(flecs::iter &it, Player *player, Position *pos);
+void inputSystem_process(flecs::iter &it, Player *player, Paddle *paddle, Velocity *velocity);
 
 } // namespace ep
 
