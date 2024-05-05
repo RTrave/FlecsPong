@@ -27,6 +27,12 @@ namespace fp
 
 		m_window.create(title, w, h, flags);
 
+		printf("FlecsPong\n");
+		printf("Player1: W/S keys to move paddle\n");
+        printf("type n to reset\n");
+        printf("type b to add a new ball\n");
+        printf("type v to switch Player2 AI\n\n");
+
 		// Here, we are creating the entities using Flecs and
 		//attaching the relevant components and tags.
 		auto player1 = m_ecs.entity("Player1")
@@ -187,6 +193,21 @@ flecs::entity Game::createBall()
             spr.m_colour = SDL_Colour{255, 255, 255, 255};
             spr.m_radius = 8;
         });
+}
+
+void Game::switchPVP()
+{
+    auto p2 = m_ecs.lookup("Player2");
+    if(p2.has<AI>())
+    {
+        p2.remove<AI>().add<Player>();
+        printf("Paddler2 now controlled by player (UP/DOWN keys)\n");
+    }
+    else
+    {
+        p2.remove<Player>().add<AI>();
+        printf("Paddle2 now controlled by AI\n");
+    }
 }
 
 } // namespace ep

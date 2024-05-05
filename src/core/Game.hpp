@@ -56,6 +56,8 @@ class InputSystem;
 
 		flecs::entity createBall();
 
+        void switchPVP();
+
 	private:
 		///
 		/// Deleted default constructor.
