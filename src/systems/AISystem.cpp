@@ -9,40 +9,39 @@
 
 
 #include "../components/All.hpp"
+#include "../core/Window.hpp"
+#include "../core/Game.hpp"
 
 #include "AISystem.hpp"
 
 namespace fp
 {
 
-AISystem::AISystem(Window* window)
+AISystem::AISystem(Game *game, Window* window)
 {
+    m_game = game;
     m_window = window;
 }
 
-//flecs::entity& findBall(flecs::world ecs)
-//{
-//    ecs.each([&](flecs::entity tball, Position& tball_pos, Velocity& tball_vel) {
-//        if(tball_vel.m_vel_x>=0) {
-//            return tball;
-//        }
-//    });
-//    return ecs.;
-//}
-
-void aiSystem_process(flecs::iter &it, AI *ai, Paddle *pad, Velocity *vel,
-                      Position *pos, Sprite *spr)
+flecs::entity AISystem::findBall()
 {
-//    AISystem * aisystem = static_cast<AISystem*>(it.ctx());
-    flecs::entity target_ball = it.world().entity().null();
+    flecs::entity target_ball = m_game->m_ecs.entity().null();
     double max_x = 0.0;
-    it.world().each([&](flecs::entity bb, Ball& tball, Position& tball_pos, Velocity& tball_vel) {
+    m_game->m_ecs.each([&](flecs::entity bb, Ball& tball, Position& tball_pos, Velocity& tball_vel) {
         if(tball_vel.m_vel_x>=0 and tball_pos.m_x>max_x) {
             target_ball = bb;
             max_x = tball_pos.m_x;
         }
     });
+    return target_ball;
+}
 
+void aiSystem_process(flecs::iter &it, AI *ai, Paddle *pad, Velocity *vel,
+                      Position *pos, Sprite *spr)
+{
+    AISystem * aisystem = static_cast<AISystem*>(it.ctx());
+
+    auto target_ball = aisystem->findBall();
     if(!target_ball.is_valid()) {
         if (240.0 >= (pos->m_y+(3*spr->m_height/4)))
         {

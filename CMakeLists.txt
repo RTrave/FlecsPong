@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.5)
 
 #Configuration du projet
 
@@ -32,6 +32,10 @@ FetchContent_Declare(
         GIT_TAG v3.2.11
 )
 FetchContent_MakeAvailable(flecs)
+option(FLECS_STATIC "Build static flecs lib" ON)
+option(FLECS_SHARED "Build shared flecs lib" OFF)
+option(FLECS_PIC "Compile static flecs lib with position independent code (PIC)" ON)
+option(FLECS_TESTS "Build flecs tests" OFF)
 
 include_directories(
 	./

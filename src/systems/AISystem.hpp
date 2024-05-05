@@ -8,10 +8,14 @@
 #ifndef FLECSPONG_SYSTEMS_AISYSTEM_HPP_
 #define FLECSPONG_SYSTEMS_AISYSTEM_HPP_
 
-#include "../core/Window.hpp"
+//#include "../core/Window.hpp"
 
 namespace fp
 {
+
+class Game;
+class Window;
+
 ///
 /// This system will ensure the ai is always following the ball, by centering the ai paddle
 /// onto the ball.
@@ -22,12 +26,22 @@ public:
     ///
     /// Default constructor.
     ///
-    AISystem(Window *window);
+    AISystem(Game *game, Window *window);
 
     ///
     /// Default destructor.
     ///
     ~AISystem() = default;
+
+    ///
+    /// Find ball to target
+    ///
+    flecs::entity findBall();
+
+    ///
+    /// Pointer to main game data.
+    ///
+    Game *m_game;
 
     ///
     /// Pointer to window data.

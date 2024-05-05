@@ -91,7 +91,7 @@ namespace fp
 //                .interval(10.0)
 //                .rate(2)
                 .iter(inputSystem_process);
-        m_ai_system = new AISystem(&m_window);
+        m_ai_system = new AISystem(this, &m_window);
         m_ecs.system<AI, Paddle, Velocity, Position, Sprite>("AISystem")
                 .ctx(static_cast<void*>(m_ai_system))
                 .interval(10.0)
@@ -184,8 +184,8 @@ flecs::entity Game::createBall()
     printf("New ball: %s\n", ball_name.c_str());
     return m_ecs.entity(ball_name.c_str())
             .set<Position>({(640 / 2.0) - 16.0, (480 / 4.0) - 16.0})
-            .set<Velocity>({0.20, 0.20})
-            .set<Ball>({0, 0.20, 0.20})
+            .set<Velocity>({0.23, 0.23})
+            .set<Ball>({0, 0.23, 0.23})
             .set([](Sprite &spr)
         {
             spr.m_width = 0;
@@ -193,6 +193,18 @@ flecs::entity Game::createBall()
             spr.m_colour = SDL_Colour{255, 255, 255, 255};
             spr.m_radius = 8;
         });
+}
+
+void Game::reset()
+{
+    printf("\nFinal score:\nPlayer1 %d-%d Player2\n",
+            m_collideables.score_player1, m_collideables.score_player2);
+    m_ecs.each<Ball>([&](flecs::entity bb, Ball& tball) {
+        bb.destruct();
+    });
+    m_collideables.score_player1 = 0;
+    m_collideables.score_player2 = 0;
+    printf("\nGame restarted\n");
 }
 
 void Game::switchPVP()

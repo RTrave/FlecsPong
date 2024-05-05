@@ -54,9 +54,16 @@ class InputSystem;
 		///
 		[[maybe_unused]] const int run();
 
+        void reset();
+
 		flecs::entity createBall();
 
         void switchPVP();
+
+        ///
+        /// The default flecs registry to hold and manage our entities.
+        ///
+        flecs::world m_ecs;
 
 	private:
 		///
@@ -68,11 +75,6 @@ class InputSystem;
 		/// Our main window.
 		///
 		Window m_window;
-
-		///
-		/// The default flecs registry to hold and manage our entities.
-		///
-		flecs::world m_ecs;
 
 		///
 		/// The AI system.
