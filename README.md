@@ -20,4 +20,4 @@ reworked Components (add Paddle and Movement, removing Player, modified AI) and 
 Few fun ehancments:
 - type n to restart the game
 - type b to add a ball (AI track the coming nearest ball)
-- type v to switch 2d panel from AI to player (up and down keys to move)
+- type v to switch second paddle from AI to player (up and down keys to move)
