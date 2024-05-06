@@ -6,6 +6,10 @@ https://github.com/reworks-org/EnttPong
 
 https://github.com/SanderMertens/flecs
 
+## Build
+
+cmake -S . -B ./build (-DCMAKE_BUILD_TYPE=Release)
+
 Player1: (W/S) keys to move paddle
 
 ## v1.x (enttpong-arch branch)
