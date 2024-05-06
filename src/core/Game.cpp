@@ -94,7 +94,7 @@ namespace fp
         m_ai_system = new AISystem(this, &m_window);
         m_ecs.system<AI, Paddle, Velocity, Position, Sprite>("AISystem")
                 .ctx(static_cast<void*>(m_ai_system))
-                .interval(10.0)
+//                .interval(10.0)
 //                .rate(10)
                 .iter(aiSystem_process);
 
@@ -140,34 +140,24 @@ namespace fp
 	{
 		// 60 updates per second. We divide 1000 by 60 instead of 1 because sdl operates on milliseconds
 		// not nanoseconds.
-		const constexpr double dt = 1000.0 / 60.0;
+		const constexpr double dt = 1000.0 / 600.0;
+		m_ecs.set_target_fps(240.0);
 
-		// This is a fixed-step gameloop.
-		// See https://gafferongames.com/post/fix_your_timestep/
-		// For an explanation.
-		double time         = 0.0;
-		double accumulator  = 0.0;
-		double current_time = SDL_GetTicks();
-		double new_time     = 0.0;
-		double frame_time   = 0.0;
+		double time         = SDL_GetTicks();
+		double old_time     = 0.0;
+		double frame_time   = dt;
 
 		while (m_window.is_open())
 		{
-			new_time     = SDL_GetTicks();
-			frame_time   = new_time - current_time;
-			current_time = new_time;
-
-			accumulator += frame_time;
-
-			while (accumulator >= dt)
-			{
-
-			    m_ecs.progress(accumulator);
-
-				accumulator -= dt;
-				time += dt;
-			}
-
+            m_ecs.progress(frame_time);
+            old_time = time;
+            time     = SDL_GetTicks();
+            frame_time   = time - old_time;
+//	        printf("FT: %d %d\n", static_cast<int>(dt), static_cast<int>(frame_time));
+            if(dt>frame_time)
+                SDL_Delay(dt-frame_time);
+//	        else
+//	            printf("OUCH\n");
 		}
 
         m_window.destroy();

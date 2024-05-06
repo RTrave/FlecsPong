@@ -29,7 +29,7 @@ namespace fp
 			throw_sdl2_exception("Window failed to be created.");
 		}
 
-		m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED); //  | SDL_RENDERER_PRESENTVSYNC
 		if (!m_renderer)
 		{
 			throw_sdl2_exception("Renderer failed to be created.");
