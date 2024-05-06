@@ -12,100 +12,97 @@
 #include <flecs.h>
 
 #include "../components/All.hpp"
-//#include "../systems/InputSystem.hpp"
-#include "../systems/AISystem.hpp"
 #include "../systems/CollisionSystem.hpp"
-#include "../systems/MoveSystem.hpp"
-#include "../systems/RenderSystem.hpp"
-
 #include "Window.hpp"
 
 namespace fp
 {
 
 class InputSystem;
+class AISystem;
+class RenderSystem;
 
-	///
-	/// This class will manage our game data and game loop.
-	/// Along with the application instance.
-	///
-	class Game final
-	{
-	public:
-		///
-		/// Main constructor.
-		///
-		/// \param title Title of the window.
-		/// \param w Width of the window.
-		/// \param h Height of the window.
-		/// \param flags SDL2 Window flags.
-		///
-		Game(std::string_view title, const int w, const int h, std::uint32_t flags);
+///
+/// This class will manage our game data and game loop.
+/// Along with the application instance.
+///
+class Game final
+{
+public:
+    ///
+    /// Main constructor.
+    ///
+    /// \param title Title of the window.
+    /// \param w Width of the window.
+    /// \param h Height of the window.
+    /// \param flags SDL2 Window flags.
+    ///
+    Game(std::string_view title, const int w, const int h, std::uint32_t flags);
 
-		///
-		/// Destructor.
-		///
-		~Game() noexcept;
+    ///
+    /// Destructor.
+    ///
+    ~Game() noexcept;
 
-		///
-		/// Run the game loop.
-		///
-		/// \return Returns game exit code.
-		///
-		[[maybe_unused]] const int run();
+    ///
+    /// Run the game loop.
+    ///
+    /// \return Returns game exit code.
+    ///
+    [[maybe_unused]] const int run();
 
-        void reset();
+    ///
+    /// Display scores, destroy Balls and reset scores
+    ///
+    void reset();
 
-		flecs::entity createBall();
+    ///
+    /// Create a new default Ball
+    ///
+    flecs::entity createBall();
 
-        void switchPVP();
+    ///
+    /// Switch Paddle2 from AI to Player and vice-versa
+    ///
+    void switchPVP();
 
-        ///
-        /// The default flecs registry to hold and manage our entities.
-        ///
-        flecs::world m_ecs;
+    ///
+    /// The default flecs world to hold and manage our entities.
+    /// Public to simplify direct access by Systems
+    ///
+    flecs::world m_ecs;
 
-	private:
-		///
-		/// Deleted default constructor.
-		///
-		Game() = delete;
+private:
+    ///
+    /// Deleted default constructor.
+    ///
+    Game() = delete;
 
-		///
-		/// Our main window.
-		///
-		Window m_window;
+    ///
+    /// Our main window.
+    ///
+    Window m_window;
 
-		///
-		/// The AI system.
-		///
-		AISystem *m_ai_system;
+    ///
+    /// The AI system.
+    ///
+    AISystem *m_ai_system;
 
-		///
-		/// The collision system.
-		///
-		CollisionSystem m_collision_system;
+    ///
+    /// Holds collideables for collision system.
+    ///
+    CollisionHolder m_collideables;
 
-		///
-		/// Holds collideables for collision system.
-		///
-		CollisionHolder m_collideables;
+    ///
+    /// The movement system.
+    ///
+    InputSystem *m_input_system;
 
-		///
-		/// The movement system.
-		///
-		MoveSystem m_move_system;
-
-        ///
-        /// The movement system.
-        ///
-        InputSystem *m_input_system;
-
-		///
-		/// The Render system.
-		///
-		RenderSystem *m_render_system;
-	};
+    ///
+    /// The Render system.
+    ///
+    RenderSystem *m_render_system;
+};
 } // namespace ep
 
 #endif

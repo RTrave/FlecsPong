@@ -11,7 +11,6 @@
 #include <flecs.h>
 #include <SDL2/SDL_events.h>
 
-#include "../core/Window.hpp"
 #include "../components/All.hpp"
 
 namespace fp
@@ -39,9 +38,7 @@ public:
     Paddle::MoveDirection m_player_movement;
 };
 
-void moveSystem_processPlayer(flecs::iter &it, Player *plr, Position *pos);
-void moveSystem_processBall(flecs::iter &it, Ball *ball, Position *pos);
-void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, Sprite *spr);
+void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, const Sprite *spr);
 
 } // namespace ep
 

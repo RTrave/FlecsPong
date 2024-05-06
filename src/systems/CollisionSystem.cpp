@@ -32,7 +32,7 @@ namespace fp
 {
 
 void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
-                             Velocity *vel, Sprite *spr)
+                             Velocity *vel, const Sprite *spr)
 {
     CollisionHolder * holder = static_cast<CollisionHolder*>(it.ctx());
     const auto& player1_pos = holder->player1.get<Position>()[0];
@@ -63,7 +63,7 @@ void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
                 // Reverse ball, "bouncing" it.
                 vel[i].m_vel_x *= -1;
                 // Set bounce immunity for a few ticks to prevent ball from getting stuck inside the paddle.
-                ball[i].m_bounce_immune_ticks = 5;
+                ball[i].m_bounce_immune_ticks = 30;
             }
 
             if (SDL_HasIntersection(&player2_bb, &ball_bb) == SDL_TRUE)
@@ -71,7 +71,7 @@ void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
                 // Reverse ball, "bouncing" it.
                 vel[i].m_vel_x *= -1;
                 // Set bounce immunity for a few ticks to prevent ball from getting stuck inside the paddle.
-                ball[i].m_bounce_immune_ticks = 5;
+                ball[i].m_bounce_immune_ticks = 30;
             }
         }
 

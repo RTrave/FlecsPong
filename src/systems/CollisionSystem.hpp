@@ -21,26 +21,8 @@ struct CollisionHolder
     int score_player2;
 };
 
-///
-/// This system will ensure the ai is always following the ball, by centering the ai paddle
-/// onto the ball.
-///
-class CollisionSystem final
-{
-public:
-    ///
-    /// Default constructor.
-    ///
-    CollisionSystem() = default;
-
-    ///
-    /// Default destructor.
-    ///
-    ~CollisionSystem() = default;
-};
-
 void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
-                             Velocity *vel, Sprite *spr);
+                             Velocity *vel, const Sprite *spr);
 
 } // namespace ep
 

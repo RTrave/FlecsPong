@@ -12,13 +12,13 @@
 #include <SDL2/SDL_events.h>
 
 #include "../components/All.hpp"
-//#include "../core/Game.hpp"
-#include "../core/Window.hpp"
 
 namespace fp
 {
 
 class Game;
+class Window;
+
 ///
 /// This class will take data from the appropriate components
 /// and update the position based on input.
@@ -47,7 +47,7 @@ public:
     Game* m_game;
 };
 
-void inputSystem_process(flecs::iter &it, Player *player, Paddle *paddle, Velocity *velocity);
+void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, Velocity *velocity);
 
 } // namespace ep
 

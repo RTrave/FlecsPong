@@ -36,8 +36,8 @@ flecs::entity AISystem::findBall()
     return target_ball;
 }
 
-void aiSystem_process(flecs::iter &it, AI *ai, Paddle *pad, Velocity *vel,
-                      Position *pos, Sprite *spr)
+void aiSystem_process(flecs::iter &it, const AI *ai, const Paddle *pad, Velocity *vel,
+                      const Position *pos, const Sprite *spr)
 {
     AISystem * aisystem = static_cast<AISystem*>(it.ctx());
 

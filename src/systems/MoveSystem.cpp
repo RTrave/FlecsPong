@@ -16,7 +16,7 @@
 namespace fp
 {
 
-void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, Sprite *spr)
+void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, const Sprite *spr)
 {
     const double time = it.delta_time();
 
