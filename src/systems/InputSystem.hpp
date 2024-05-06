@@ -36,6 +36,19 @@ public:
     ///
     ~InputSystem() = default;
 
+    bool isAzerty() const
+    {
+        return m_azerty;
+    }
+
+    void switchAzerty()
+    {
+        if(m_azerty)
+            m_azerty = false;
+        else
+            m_azerty = true;
+    }
+
     ///
     /// Pointer to window data.
     ///
@@ -45,6 +58,11 @@ public:
     /// Pointer to main Game object.
     ///
     Game* m_game;
+
+    ///
+    /// Switch to/from azerty keyboard
+    ///
+    bool m_azerty;
 };
 
 void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, Velocity *velocity);

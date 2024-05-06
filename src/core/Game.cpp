@@ -32,15 +32,16 @@ Game::Game(std::string_view title, const int w, const int h,
     m_window.create(title, w, h, flags);
 
     printf("FlecsPong\n");
-    printf("Player1: W/S keys to move paddle\n");
+    printf("Player1: (W/S) keys to move paddle\n");
+    printf("type f to switch to azerty keyboard (Z/S)\n");
     printf("type n to reset\n");
     printf("type b to add a new ball\n");
-    printf("type v to switch Player2 AI\n\n");
+    printf("type v to switch Player2 AI (UP/DOWN)\n\n");
 
     // Here, we are creating the entities using Flecs and
     //attaching the relevant components and tags.
     auto player1 = m_ecs.entity("Player1")
-            .set<Position>({ 20.0, 20.0 })
+            .set<Position>({ 20.0, 240.0 })
             .set<Velocity>({ 0.0, 0.0 })
             .set([](Sprite &spr, Paddle &pad)
     {
@@ -53,7 +54,7 @@ Game::Game(std::string_view title, const int w, const int h,
         pad.m_movement = Paddle::MoveDirection::STOPPED;
     });
     auto player2 = m_ecs.entity("Player2")
-            .set<Position>({ w - 32.0, 20.0 })
+            .set<Position>({ w - 32.0, 240.0 })
             .set<Velocity>({ 0.0, 0.0 })
             .set([](Sprite &spr, Paddle &pad)
     {
@@ -165,7 +166,7 @@ flecs::entity Game::createBall()
     ball_name += std::to_string(ball_id++);
     printf("New ball: %s\n", ball_name.c_str());
     return m_ecs.entity(ball_name.c_str())
-            .set<Position>({ (640 / 2.0) - 16.0, (480 / 4.0) - 16.0 })
+            .set<Position>({ (640 / 2.0) - 8.0, (480 / 2.0) - 8.0 })
             .set<Velocity>({ 0.25, 0.25 })
             .set<Ball>({ 0, 0.25, 0.25 })
             .set([](Sprite &spr)
