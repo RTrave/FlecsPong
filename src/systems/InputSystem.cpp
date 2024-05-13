@@ -144,6 +144,10 @@ void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, 
                         input_system->m_game->createBall();
                         break;
 
+                    case SDLK_k: // Create nb balls
+                        input_system->m_game->createKBalls(50000);
+                        break;
+
                     case SDLK_v: // Switch PVP/Player for Paddle2
                         input_system->m_game->switchPVP();
                         break;

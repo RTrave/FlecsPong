@@ -138,12 +138,34 @@ const int Game::run()
     double time = SDL_GetTicks();
     double old_time = 0.0;
     double frame_time = dt;
+    double fps_time = SDL_GetTicks();
+    double fps_ticks = 0;
 
     while (m_window.is_open())
     {
 
         // Call the system processing
         m_ecs.progress(frame_time);
+
+        // Create balls if request
+        if(m_ballsToCreate) {
+            int i = 0;
+            while(m_ballsToCreate and i<=1000) {
+                createBall();
+                m_ballsToCreate--;
+                i++;
+            }
+            if(!m_ballsToCreate)
+                printf("K Balls created\n");
+        }
+
+        fps_ticks++;
+        if(fps_ticks!=0 and (SDL_GetTicks()-fps_time)>1000) {
+            printf("FPS: %f\n",
+                    fps_ticks*1000/(SDL_GetTicks()-fps_time));
+            fps_time = SDL_GetTicks();
+            fps_ticks = 0;
+        }
 
         // Check for delay to wait for before next frame
         old_time = time;
@@ -164,7 +186,7 @@ flecs::entity Game::createBall()
 {
     std::string ball_name("Ball");
     ball_name += std::to_string(ball_id++);
-    printf("New ball: %s\n", ball_name.c_str());
+//    printf("New ball: %s\n", ball_name.c_str());
     return m_ecs.entity(ball_name.c_str())
             .set<Position>({ (640 / 2.0) - 8.0, (480 / 2.0) - 8.0 })
             .set<Velocity>({ 0.25, 0.25 })
@@ -179,6 +201,12 @@ flecs::entity Game::createBall()
     });
 }
 
+void Game::createKBalls(int nb)
+{
+    printf("Create %d balls\n", nb);
+    m_ballsToCreate = nb;
+}
+
 void Game::reset()
 {
     // Display and reset scores
@@ -188,11 +216,13 @@ void Game::reset()
     m_collideables.score_player2 = 0;
 
     // Destroy all Ball entities
+    int nb = 0;
     m_ecs.each<Ball>([&](flecs::entity bb, Ball &tball)
     {
         bb.destruct();
+        nb++;
     });
-    printf("\nGame restarted\n");
+    printf("\nGame restarted (%d balls destroyed)\n", nb);
 }
 
 void Game::switchPVP()

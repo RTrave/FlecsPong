@@ -62,6 +62,11 @@ public:
     flecs::entity createBall();
 
     ///
+    /// Create nb default Balls
+    ///
+    void createKBalls(int nb);
+
+    ///
     /// Switch Paddle2 from AI to Player and vice-versa
     ///
     void switchPVP();
@@ -102,6 +107,11 @@ private:
     /// The Render system.
     ///
     RenderSystem *m_render_system;
+
+    ///
+    /// Balls to create
+    ///
+    int m_ballsToCreate = 0;
 };
 } // namespace ep
 
