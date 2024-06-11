@@ -172,7 +172,8 @@ const int Game::run()
         time = SDL_GetTicks();
         frame_time = time - old_time;
         if (dt > frame_time)
-            SDL_Delay(dt - frame_time);
+            SDL_Delay(1);
+//            SDL_Delay(dt - frame_time);
     }
 
     m_window.destroy();

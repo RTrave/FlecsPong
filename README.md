@@ -28,3 +28,10 @@ Few fun enhancements:
 - type n to restart the game
 - type b to add a ball (AI track the coming nearest ball)
 - type v to switch Paddle2 from AI to Player (UP/DOWN)
+- (testing) type k to create 50k balls
+
+## draft code (multi-thread branch)
+
+Testing some tricks around threading Flecs (internal tables spliting) and systems. 
+Few changes in v2 to procure same tests: ball is a Rect and loop delay is reduced.
+Code is a lot more effecient than v2.

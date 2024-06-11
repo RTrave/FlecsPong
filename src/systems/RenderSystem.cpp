@@ -38,21 +38,29 @@ void renderSystem_process(flecs::iter &it, const Sprite *spr,
     RenderSystem *render = static_cast<RenderSystem*>(it.ctx());
     for (auto i : it)
     {
+        // First we set the rectangle fill colour to that of the spritecomponents.
+        SDL_SetRenderDrawColor(render->m_window->renderer(),
+                spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
+                spr[i].m_colour.a);
         if (spr[i].m_radius != 0)
         {
-            // We use SDL2_gfx to make drawing circles easier.
-            filledCircleRGBA(render->m_window->renderer(),
-                    static_cast<Sint16>(pos[i].m_x),
-                    static_cast<Sint16>(pos[i].m_y), spr[i].m_radius,
-                    spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
-                    spr[i].m_colour.a);
+//            // We use SDL2_gfx to make drawing circles easier.
+//            filledCircleRGBA(render->m_window->renderer(),
+//                    static_cast<Sint16>(pos[i].m_x),
+//                    static_cast<Sint16>(pos[i].m_y), spr[i].m_radius,
+//                    spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
+//                    spr[i].m_colour.a);
+
+            // Then we create the actual rectangle.
+            const SDL_Rect draw_rect
+            { static_cast<int>(pos[i].m_x), static_cast<int>(pos[i].m_y),
+                    spr[i].m_radius*2, spr[i].m_radius*2 };
+
+            // Now the rectangle gets renderered with the appropriate colours and position data to the window.
+            SDL_RenderFillRect(render->m_window->renderer(), &draw_rect);
         }
         else
         {
-            // First we set the rectangle fill colour to that of the spritecomponents.
-            SDL_SetRenderDrawColor(render->m_window->renderer(),
-                    spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
-                    spr[i].m_colour.a);
 
             // Then we create the actual rectangle.
             const SDL_Rect draw_rect
