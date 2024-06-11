@@ -31,6 +31,9 @@ public:
     ///
     ~AISystem() = default;
 
+    static void aiSystem_process(flecs::iter &it, const AI *ai, const Paddle *pad,
+                          Velocity *vel, const Position *pos, const Sprite *spr);
+
     ///
     /// Find ball to target
     ///

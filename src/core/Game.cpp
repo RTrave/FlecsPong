@@ -11,6 +11,7 @@
 #include "../systems/InputSystem.hpp"
 #include "../systems/AISystem.hpp"
 #include "../systems/MoveSystem.hpp"
+#include "../systems/SyncSystem.hpp"
 #include "../systems/RenderSystem.hpp"
 
 #include "../Log.hpp"
@@ -19,6 +20,8 @@
 
 namespace fp
 {
+//static AISystem *ai_system;
+
 Game::Game(std::string_view title, const int w, const int h,
            std::uint32_t flags)
                    : m_window{ }
@@ -53,6 +56,7 @@ Game::Game(std::string_view title, const int w, const int h,
         pad.m_velocity = 0.2;
         pad.m_movement = Paddle::MoveDirection::STOPPED;
     });
+    player1.set<RenderPosition>({0,0});
     auto player2 = m_ecs.entity("Player2")
             .set<Position>({ w - 32.0, 240.0 })
             .set<Velocity>({ 0.0, 0.0 })
@@ -66,6 +70,7 @@ Game::Game(std::string_view title, const int w, const int h,
         pad.m_velocity = 0.2;
         pad.m_movement = Paddle::MoveDirection::STOPPED;
     });
+    player2.set<RenderPosition>({0,0});
 
     // Then we add Player or AI component
     player1.add<Player>();
@@ -80,52 +85,125 @@ Game::Game(std::string_view title, const int w, const int h,
     m_collideables.score_player1 = 0;
     m_collideables.score_player2 = 0;
 
+    m_ecs.set_stage_count(5);
+    m_ecs.set_threads(2);
+
     // Set up Input and AI systems (updating Velocity)
     m_input_system = new InputSystem(this, &m_window);
-    m_ecs.system<const Player, Paddle, Velocity>("InputSystem")
-            .kind(flecs::PreUpdate)
+    m_inputsys = m_ecs.system<const Player, Paddle, Velocity>("InputSystem")
+//            .kind(flecs::PreUpdate)
             .ctx(static_cast<void*>(m_input_system))
             .iter(inputSystem_process);
     m_ai_system = new AISystem(this, &m_window);
-    m_ecs.system<const AI, const Paddle, Velocity, const Position, const Sprite>("AISystem")
+//    m_ai_system = ai_system;
+    m_aisys = m_ecs.system<const AI, const Paddle, Velocity, const Position, const Sprite>("AISystem")
             .ctx(static_cast<void*>(m_ai_system))
-            .iter(aiSystem_process);
+            .iter(m_ai_system->aiSystem_process);
 
     // Set up Move system (updating Position)
-    m_ecs.system<Velocity, Position, const Sprite>("MoveSystem")
-            .iter(moveSystem_process);
+    m_movesys = m_ecs.system<Velocity, Position, const Sprite>("MoveSystem")
+        .multi_threaded()
+        .iter(moveSystem_process);
 
     // Set up Collision system (updating Movement and Position), and
     // processing scores
-    m_ecs.system<Ball, Position, Velocity, const Sprite>("CollisionSystem")
-            .kind(flecs::PostUpdate)
+    m_collisionsys = m_ecs.system<Ball, Position, Velocity, const Sprite>("CollisionSystem")
+//            .kind(flecs::PostUpdate)
             .ctx(static_cast<void*>(&m_collideables))
+            .multi_threaded()
             .iter(collisionSystem_process);
+
+    m_sync_system = new SyncSystem();
+    m_syncsys = m_ecs.system<const Position, RenderPosition>("SyncSystem")
+            .ctx(static_cast<void*>(m_sync_system))
+            .multi_threaded()
+            .iter(syncSystem_process);
 
     // Setup Render Systems, Flush and Draw are tasks
     m_render_system = new RenderSystem(&m_window);
-    m_ecs.system("RenderSystemFlush")
-            .kind(flecs::PreStore)
+    m_rendersys_flush = m_ecs.system("RenderSystemFlush")
+//            .kind(flecs::PreStore)
             .ctx(static_cast<void*>(m_render_system))
             .iter(renderSystem_flush);
-    m_ecs.system<const Sprite, const Position>("RenderSystem")
-            .kind(flecs::OnStore)
+    m_rendersys = m_ecs.system<const Sprite, const RenderPosition>("RenderSystem")
+//            .kind(flecs::OnStore)
             .ctx(static_cast<void*>(m_render_system))
             .iter(renderSystem_process);
-    m_ecs.system("RenderSystemDraw")
-            .kind(flecs::OnStore)
+    m_rendersys_draw = m_ecs.system("RenderSystemDraw")
+//            .kind(flecs::OnStore)
             .ctx(static_cast<void*>(m_render_system)).iter(renderSystem_draw);
+
+    m_systemMutex = SDL_CreateMutex();
+    m_systemFlag = THREAD_STATE_OFF;
 }
 
 Game::~Game() noexcept
 {
+    SDL_LockMutex(m_systemMutex);
+    m_systemFlag = THREAD_STATE_STOPING;
+    while (m_systemFlag != THREAD_STATE_OFF)
+    {
+        SDL_UnlockMutex(m_systemMutex);
+        SDL_Delay(50);
+        SDL_LockMutex(m_systemMutex);
+    }
+    SDL_Delay(50);
+    SDL_UnlockMutex(m_systemMutex);
+    SDL_DestroyMutex(m_systemMutex);
+
     // End game, display scores and delete members system contexts
     printf("\nFinal score:\nPlayer1 %d-%d Player2\n",
             m_collideables.score_player1, m_collideables.score_player2);
+    delete m_sync_system;
     delete m_input_system;
     delete m_render_system;
     delete m_ai_system;
     SDL_Quit();
+}
+
+int threadSystem(void *game)
+{
+    Game *game_t = static_cast<Game*>(game);
+    SDL_Delay(50);
+    game_t->threadLoop();
+    return 0;
+}
+
+void Game::threadLoop()
+{
+    SDL_LockMutex(m_systemMutex);
+    printf("System Thread launch\n");
+    m_systemFlag = THREAD_STATE_ON;
+    double frame_time;
+    flecs::world thr_stage_1 = m_ecs.get_stage(1);
+    while (m_systemFlag == THREAD_STATE_ON)
+    {
+//        SDL_UnlockMutex(m_systemMutex);
+//        printf("plop\n");
+        while(!m_drawnFlag && m_systemFlag == THREAD_STATE_ON)
+        {
+            SDL_UnlockMutex(m_systemMutex);
+            SDL_Delay(1);
+            SDL_LockMutex(m_systemMutex);
+        }
+        frame_time = m_frame_time;
+//        m_inputsys.run(frame_time);
+        SDL_UnlockMutex(m_systemMutex);
+        m_aisys.run(frame_time).stage(thr_stage_1);
+//        m_movesys.run(frame_time).stage(thr_stage_1);
+        m_movesys.run_worker(0,2,frame_time).stage(thr_stage_1);
+//        m_collisionsys.run(frame_time).stage(thr_stage_1);
+        m_collisionsys.run_worker(0,2,frame_time).stage(thr_stage_1);
+//        SDL_LockMutex(m_systemMutex);
+        SDL_LockMutex(m_systemMutex);
+//        m_syncsys.run(frame_time);
+        m_drawnFlag = false;
+        SDL_UnlockMutex(m_systemMutex);
+//        SDL_Delay(3);
+        SDL_LockMutex(m_systemMutex);
+    }
+    m_systemFlag = THREAD_STATE_OFF;
+    SDL_UnlockMutex(m_systemMutex);
 }
 
 const int Game::run()
@@ -137,27 +215,63 @@ const int Game::run()
 
     double time = SDL_GetTicks();
     double old_time = 0.0;
-    double frame_time = dt;
+    m_frame_time = dt/2;
     double fps_time = SDL_GetTicks();
     double fps_ticks = 0;
+    m_drawnFlag = false;
+    flecs::world thr_stage_0 = m_ecs.get_stage(0);
+
+    SDL_LockMutex(m_systemMutex);
+    m_systemThread = SDL_CreateThread(threadSystem,
+            "SystemThread",
+            this);
+    while (m_systemFlag != THREAD_STATE_ON)
+    {
+        SDL_UnlockMutex(m_systemMutex);
+        SDL_Delay(5);
+        SDL_LockMutex(m_systemMutex);
+    }
+    SDL_UnlockMutex(m_systemMutex);
 
     while (m_window.is_open())
     {
-
+        SDL_LockMutex(m_systemMutex);
+        while(m_drawnFlag)
+        {
+            SDL_UnlockMutex(m_systemMutex);
+            SDL_Delay(1);
+            SDL_LockMutex(m_systemMutex);
+        }
+        SDL_UnlockMutex(m_systemMutex);
         // Call the system processing
-        m_ecs.progress(frame_time);
-
+//        m_ecs.progress(m_frame_time);
         // Create balls if request
         if(m_ballsToCreate) {
             int i = 0;
             while(m_ballsToCreate and i<=1000) {
+                SDL_LockMutex(m_systemMutex);
                 createBall();
+                SDL_UnlockMutex(m_systemMutex);
                 m_ballsToCreate--;
                 i++;
             }
             if(!m_ballsToCreate)
                 printf("K Balls created\n");
         }
+
+        m_inputsys.run(m_frame_time).stage(thr_stage_0);
+//        m_aisys.run(m_frame_time);
+//        m_movesys.run(m_frame_time);
+//        m_collisionsys.run(m_frame_time);
+        m_syncsys.run(m_frame_time).stage(thr_stage_0);
+//        m_syncsys.run_worker(0,4,m_frame_time).stage(thr_stage_0);
+        SDL_LockMutex(m_systemMutex);
+        m_drawnFlag = true;
+        SDL_UnlockMutex(m_systemMutex);
+        m_rendersys_flush.run(m_frame_time).stage(thr_stage_0);
+//        SDL_LockMutex(m_systemMutex);
+        m_rendersys.run(m_frame_time).stage(thr_stage_0);
+        m_rendersys_draw.run(m_frame_time).stage(thr_stage_0);
 
         fps_ticks++;
         if(fps_ticks!=0 and (SDL_GetTicks()-fps_time)>1000) {
@@ -170,11 +284,14 @@ const int Game::run()
         // Check for delay to wait for before next frame
         old_time = time;
         time = SDL_GetTicks();
-        frame_time = time - old_time;
-        if (dt > frame_time)
-            SDL_Delay(dt - frame_time);
+        m_frame_time = time - old_time;
+//        if (dt > m_frame_time)
+//            SDL_Delay(dt - m_frame_time);
     }
 
+//    SDL_LockMutex(m_systemMutex);
+//    m_systemFlag = THREAD_STATE_STOPING;
+//    SDL_UnlockMutex(m_systemMutex);
     m_window.destroy();
     SDL_Delay(200);
     return EXIT_SUCCESS;
@@ -191,6 +308,7 @@ flecs::entity Game::createBall()
             .set<Position>({ (640 / 2.0) - 8.0, (480 / 2.0) - 8.0 })
             .set<Velocity>({ 0.25, 0.25 })
             .set<Ball>({ 0, 0.25, 0.25 })
+            .set<RenderPosition>({0.0,0.0})
             .set([](Sprite &spr)
     {
         spr.m_width = 0;

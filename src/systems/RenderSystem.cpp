@@ -10,6 +10,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 #include "../components/Position.hpp"
+#include "../components/RenderPosition.hpp"
 #include "../components/Sprite.hpp"
 #include "../core/Window.hpp"
 
@@ -33,30 +34,38 @@ void renderSystem_flush(flecs::iter &it)
 }
 
 void renderSystem_process(flecs::iter &it, const Sprite *spr,
-                          const Position *pos)
+                          const RenderPosition *rpos)
 {
     RenderSystem *render = static_cast<RenderSystem*>(it.ctx());
+    // First we set the rectangle fill colour to that of the spritecomponents.
+    SDL_SetRenderDrawColor(render->m_window->renderer(),
+            255, 255, 255,
+            255);
     for (auto i : it)
     {
         if (spr[i].m_radius != 0)
         {
             // We use SDL2_gfx to make drawing circles easier.
-            filledCircleRGBA(render->m_window->renderer(),
-                    static_cast<Sint16>(pos[i].m_x),
-                    static_cast<Sint16>(pos[i].m_y), spr[i].m_radius,
-                    spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
-                    spr[i].m_colour.a);
-        }
-        else
-        {
-            // First we set the rectangle fill colour to that of the spritecomponents.
-            SDL_SetRenderDrawColor(render->m_window->renderer(),
-                    spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
-                    spr[i].m_colour.a);
+//            filledCircleRGBA(render->m_window->renderer(),
+//                    static_cast<Sint16>(rpos[i].m_x),
+//                    static_cast<Sint16>(rpos[i].m_y), spr[i].m_radius,
+//                    spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
+//                    spr[i].m_colour.a);
 
             // Then we create the actual rectangle.
             const SDL_Rect draw_rect
-            { static_cast<int>(pos[i].m_x), static_cast<int>(pos[i].m_y),
+            { static_cast<int>(rpos[i].m_x), static_cast<int>(rpos[i].m_y),
+                    spr[i].m_radius*2, spr[i].m_radius*2 };
+
+            // Now the rectangle gets renderered with the appropriate colours and position data to the window.
+            SDL_RenderFillRect(render->m_window->renderer(), &draw_rect);
+        }
+        else
+        {
+
+            // Then we create the actual rectangle.
+            const SDL_Rect draw_rect
+            { static_cast<int>(rpos[i].m_x), static_cast<int>(rpos[i].m_y),
                     spr[i].m_width, spr[i].m_height };
 
             // Now the rectangle gets renderered with the appropriate colours and position data to the window.

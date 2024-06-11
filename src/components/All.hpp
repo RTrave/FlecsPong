@@ -4,6 +4,7 @@
 #include "Ball.hpp"
 #include "Player.hpp"
 #include "Position.hpp"
+#include "RenderPosition.hpp"
 #include "Sprite.hpp"
 #include "Velocity.hpp"
 #include "Paddle.hpp"

@@ -38,7 +38,7 @@ class Window;
 
 //	void renderSystem_init(Window* window);
     void renderSystem_flush(flecs::iter &it);
-	void renderSystem_process(flecs::iter &it, const Sprite* spr, const Position* pos);
+	void renderSystem_process(flecs::iter &it, const Sprite* spr, const RenderPosition* rpos);
     void renderSystem_draw(flecs::iter &it);
 
 } // namespace ep
