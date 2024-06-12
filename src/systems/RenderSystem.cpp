@@ -54,8 +54,11 @@ void renderSystem_process(flecs::iter &it, const Sprite *spr,
 
             // Then we create the actual rectangle.
             const SDL_Rect draw_rect
-            { static_cast<int>(rpos[i].m_x), static_cast<int>(rpos[i].m_y),
-                    spr[i].m_radius*2, spr[i].m_radius*2 };
+            {
+                static_cast<int>(rpos[i].m_x - spr[i].m_radius),
+                static_cast<int>(rpos[i].m_y - spr[i].m_radius),
+                spr[i].m_radius*2,
+                spr[i].m_radius*2 };
 
             // Now the rectangle gets renderered with the appropriate colours and position data to the window.
             SDL_RenderFillRect(render->m_window->renderer(), &draw_rect);
