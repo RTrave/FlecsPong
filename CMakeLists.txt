@@ -21,27 +21,29 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17") #c++11
 INCLUDE(FindPkgConfig)
 
 PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-PKG_SEARCH_MODULE(SDL2GFX REQUIRED SDL2_gfx>=1.0.2)
+#PKG_SEARCH_MODULE(SDL2GFX REQUIRED SDL2_gfx>=1.0.2)
 #PKG_SEARCH_MODULE(SDL2NET REQUIRED SDL2_net>=2.0.0)
 
 include(FetchContent)
 
-FetchContent_Declare(
-        flecs
-        GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
-        GIT_TAG v3.2.11
-)
-FetchContent_MakeAvailable(flecs)
-option(FLECS_STATIC "Build static flecs lib" ON)
-option(FLECS_SHARED "Build shared flecs lib" OFF)
-option(FLECS_PIC "Compile static flecs lib with position independent code (PIC)" ON)
-option(FLECS_TESTS "Build flecs tests" OFF)
+#FetchContent_Declare(
+#        flecs
+#        GIT_REPOSITORY https://github.com/SanderMertens/flecs.git
+#        GIT_TAG v3.2.11
+#)
+#FetchContent_MakeAvailable(flecs)
+#option(FLECS_STATIC "Build static flecs lib" ON)
+#option(FLECS_SHARED "Build shared flecs lib" OFF)
+#option(FLECS_PIC "Compile static flecs lib with position independent code (PIC)" ON)
+#option(FLECS_TESTS "Build flecs tests" OFF)
 
 include_directories(
 	./
+	./src/
+	./src/flecs/
 	./sojotz/
 	${SDL2_INCLUDE_DIRS}
-	./build/_deps/flecs-src/include/
+#	./build/_deps/flecs-src/include/
 	/usr/include/
 	)
 
@@ -59,8 +61,8 @@ add_executable(
 target_link_libraries(
         flecspong
         ${SDL2_LIBRARIES}
-        ${SDL2GFX_LIBRARIES}
-        flecs::flecs_static 
+#        ${SDL2GFX_LIBRARIES}
+#        flecs::flecs_static 
 #        ${SDL2NET_LIBRARIES}
 	)
 

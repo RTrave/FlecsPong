@@ -37,12 +37,12 @@ void renderSystem_process(flecs::iter &it, const Sprite *spr,
                           const RenderPosition *rpos)
 {
     RenderSystem *render = static_cast<RenderSystem*>(it.ctx());
-    // First we set the rectangle fill colour to that of the spritecomponents.
-    SDL_SetRenderDrawColor(render->m_window->renderer(),
-            255, 255, 255,
-            255);
     for (auto i : it)
     {
+        // First we set the rectangle fill colour to that of the spritecomponents.
+        SDL_SetRenderDrawColor(render->m_window->renderer(),
+                spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
+                spr[i].m_colour.a);
         if (spr[i].m_radius != 0)
         {
             // We use SDL2_gfx to make drawing circles easier.
