@@ -7,7 +7,7 @@
 
 #include <flecs.h>
 #include <SDL2/SDL_render.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
+//#include <SDL2/SDL2_gfxPrimitives.h>
 
 #include "../components/Position.hpp"
 #include "../components/Sprite.hpp"

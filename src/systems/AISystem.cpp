@@ -5,7 +5,7 @@
 /// Refer to LICENSE.txt for more details.
 ///
 
-#include <flecs.h>
+#include <flecs/flecs.h>
 
 
 #include "../components/All.hpp"
