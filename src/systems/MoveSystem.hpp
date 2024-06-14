@@ -13,8 +13,8 @@
 
 #include "../components/All.hpp"
 
-namespace fp
-{
+namespace fp {
+
 ///
 /// This class will take data from the appropriate components
 /// and update the position based on input.
@@ -38,7 +38,8 @@ public:
     Paddle::MoveDirection m_player_movement;
 };
 
-void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, const Sprite *spr);
+void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos,
+        const Sprite *spr);
 
 } // namespace ep
 

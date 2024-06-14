@@ -15,8 +15,7 @@
 #include "../systems/CollisionSystem.hpp"
 #include "Window.hpp"
 
-namespace fp
-{
+namespace fp {
 
 class InputSystem;
 class AISystem;
@@ -113,6 +112,7 @@ private:
     ///
     int m_ballsToCreate = 0;
 };
+
 } // namespace ep
 
 #endif

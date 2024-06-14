@@ -8,23 +8,15 @@
 #ifndef FLECSPONG_COMPONENTS_AI_HPP_
 #define FLECSPONG_COMPONENTS_AI_HPP_
 
-namespace fp
+namespace fp {
+
+///
+/// Tag to keep track of the AI entity.
+///
+struct AI
 {
-	///
-	/// Keeps track of the AI's movement.
-	///
-    struct AI
-	{
-//		///
-//		/// x pos on screen.
-//		///
-//		double m_x;
-//
-//		///
-//		/// y pos on screen.
-//		///
-//		double m_y;
-	};
+};
+
 } // namespace ep
 
 #endif

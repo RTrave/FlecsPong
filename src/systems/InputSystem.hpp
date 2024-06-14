@@ -13,8 +13,7 @@
 
 #include "../components/All.hpp"
 
-namespace fp
-{
+namespace fp {
 
 class Game;
 class Window;
@@ -29,7 +28,7 @@ public:
     ///
     /// Default constructor.
     ///
-    InputSystem(Game* game, Window* window);
+    InputSystem(Game *game, Window *window);
 
     ///
     /// Default destructor.
@@ -43,7 +42,7 @@ public:
 
     void switchAzerty()
     {
-        if(m_azerty)
+        if (m_azerty)
             m_azerty = false;
         else
             m_azerty = true;
@@ -52,12 +51,12 @@ public:
     ///
     /// Pointer to window data.
     ///
-    Window* m_window;
+    Window *m_window;
 
     ///
     /// Pointer to main Game object.
     ///
-    Game* m_game;
+    Game *m_game;
 
     ///
     /// Switch to/from azerty keyboard
@@ -65,7 +64,8 @@ public:
     bool m_azerty;
 };
 
-void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, Velocity *velocity);
+void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle,
+        Velocity *velocity);
 
 } // namespace ep
 

@@ -15,10 +15,8 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
-//#include "../events/KeyDown.hpp"
+namespace fp {
 
-namespace fp
-{
 ///
 /// Basic window abstraction over SDL2 for this demo app.
 ///
@@ -44,7 +42,7 @@ public:
     /// \param flags SDL2 Window flags.
     ///
     void create(std::string_view title, const int w, const int h,
-                std::uint32_t flags);
+            std::uint32_t flags);
 
     ///
     /// Close the window.
@@ -89,6 +87,7 @@ private:
     ///
     SDL_Renderer *m_renderer;
 };
+
 } // namespace ep
 
 #endif

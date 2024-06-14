@@ -8,8 +8,7 @@
 #ifndef FLECSPONG_SYSTEMS_AISYSTEM_HPP_
 #define FLECSPONG_SYSTEMS_AISYSTEM_HPP_
 
-namespace fp
-{
+namespace fp {
 
 class Game;
 class Window;
@@ -48,7 +47,7 @@ public:
 };
 
 void aiSystem_process(flecs::iter &it, const AI *ai, const Paddle *pad,
-                      Velocity *vel, const Position *pos, const Sprite *spr);
+        Velocity *vel, const Position *pos, const Sprite *spr);
 
 } // namespace ep
 

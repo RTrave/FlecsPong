@@ -7,33 +7,55 @@
 
 #include <ctime>
 #include <iostream>
+#include <algorithm>
 
 #include "core/Game.hpp"
 
-int main(int argsc, char* argsv[])
+char* getCmdOption(char **begin, char **end, const std::string &option)
 {
-	// Seeds RNG.
-	std::srand(std::time(nullptr));
+    char **itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return *itr;
+    }
+    return 0;
+}
 
-	try
-	{
-		fp::Game pong("Flecs Pong", 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI);
-		return pong.run();
-	}
-	catch (const std::exception& e)
-	{
-		// Error message printed to console, dont need to reprint exception,
-		// just wait for player input.
+bool cmdOptionExists(char **begin, char **end, const std::string &option)
+{
+    return std::find(begin, end, option) != end;
+}
 
-		std::cin.get();
-		return EXIT_FAILURE;
-	}
-	catch (...)
-	{
-		// Error message printed to console, dont need to reprint exception,
-		// just wait for player input.
+int main(int argsc, char *argsv[])
+{
+    // Seeds RNG.
+    std::srand(std::time(nullptr));
 
-		std::cin.get();
-		return EXIT_FAILURE;
-	}
+    try
+    {
+        fp::Game pong("Flecs Pong", 640, 480,
+                SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS
+                        | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI);
+        if (cmdOptionExists(argsv, argsv + argsc, "-mt"))
+        {
+            printf("Multi threaded\n");
+        }
+        return pong.run();
+    }
+    catch (const std::exception &e)
+    {
+        // Error message printed to console, dont need to reprint exception,
+        // just wait for player input.
+
+        std::cin.get();
+        return EXIT_FAILURE;
+    }
+    catch (...)
+    {
+        // Error message printed to console, dont need to reprint exception,
+        // just wait for player input.
+
+        std::cin.get();
+        return EXIT_FAILURE;
+    }
 }

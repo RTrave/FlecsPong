@@ -8,8 +8,8 @@
 #ifndef FLECSPONG_SYSTEMS_COLLISIONSYSTEM_HPP_
 #define FLECSPONG_SYSTEMS_COLLISIONSYSTEM_HPP_
 
-namespace fp
-{
+namespace fp {
+
 ///
 /// Holds information about possible colliders.
 ///
@@ -22,7 +22,7 @@ struct CollisionHolder
 };
 
 void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
-                             Velocity *vel, const Sprite *spr);
+        Velocity *vel, const Sprite *spr);
 
 } // namespace ep
 

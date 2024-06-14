@@ -8,23 +8,24 @@
 #ifndef FLECSPONG_COMPONENTS_POSITION_HPP_
 #define FLECSPONG_COMPONENTS_POSITION_HPP_
 
-namespace fp
-{
-	///
-	/// A component that describes the position of something on the screen.
-	///
-    struct Position
-	{
-		///
-		/// x pos on screen.
-		///
-		double m_x;
+namespace fp {
 
-		///
-		/// y pos on screen.
-		///
-		double m_y;
-	};
+///
+/// A component that describes the position of something on the screen.
+///
+struct Position
+{
+    ///
+    /// x pos on screen.
+    ///
+    double m_x;
+
+    ///
+    /// y pos on screen.
+    ///
+    double m_y;
+};
+
 } // namespace ep
 
 #endif
