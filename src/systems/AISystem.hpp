@@ -33,7 +33,7 @@ public:
     ///
     /// Find ball to target
     ///
-    flecs::entity findBall();
+    flecs::entity findBall(flecs::world world);
 
     ///
     /// Pointer to main game data.

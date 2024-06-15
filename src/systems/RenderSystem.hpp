@@ -22,23 +22,35 @@ public:
     ///
     /// Default constructor.
     ///
-    RenderSystem(Window *window);
+    RenderSystem(Window *window, bool is_threaded);
 
     ///
     /// Default destructor.
     ///
     ~RenderSystem() = default;
 
+    bool isThreaded() const
+    {
+        return m_threaded;
+    }
+
     ///
     /// Pointer to window data.
     ///
     Window *m_window;
+
+private:
+    ///
+    /// If threaded, use synced RenderPosition component,
+    /// not Position
+    ///
+    bool m_threaded;
 };
 
-//	void renderSystem_init(Window* window);
 void renderSystem_flush(flecs::iter &it);
 void renderSystem_process(flecs::iter &it, const Sprite *spr,
-        const Position *pos);
+        const Position *pos,
+        const RenderPosition *rpos);
 void renderSystem_draw(flecs::iter &it);
 
 } // namespace ep

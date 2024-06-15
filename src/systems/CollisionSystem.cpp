@@ -55,7 +55,10 @@ void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
         else
         {
             // Ball bounding box.
-            const SDL_Rect ball_bb {static_cast<int>(pos[i].m_x - spr[i].m_radius), static_cast<int>(pos[i].m_y - spr[i].m_radius), spr[i].m_radius * 2, spr[i].m_radius * 2};
+            const SDL_Rect ball_bb {
+                static_cast<int>(pos[i].m_x),
+                        static_cast<int>(pos[i].m_y),
+                        spr[i].m_width, spr[i].m_height};
 
             // Calculate collisions and act on them.
             if (SDL_HasIntersection(&player1_bb, &ball_bb) == SDL_TRUE)
@@ -81,8 +84,8 @@ void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
             holder->score_player2++;
 //            printf("Player1 %d-%d Player2\n", holder->score_player1, holder->score_player2);
             // Ball passed the player paddle, reset it.
-            pos[i].m_x = (640.0 / 2.0) - 16.0;
-            pos[i].m_y = (480.0 / 2.0) - 16.0;
+            pos[i].m_x = (640.0 / 2.0) - 8.0;
+            pos[i].m_y = (480.0 / 2.0) - 8.0;
 
             vel[i].m_vel_x = randomize_velocity_dir(ball[i].m_initial_vel_x);
             vel[i].m_vel_y = randomize_velocity_dir(ball[i].m_initial_vel_y);
@@ -92,8 +95,8 @@ void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
             holder->score_player1++;
 //            printf("Player1 %d-%d Player2\n", holder->score_player1, holder->score_player2);
             // Ball passed the ai paddle, reset it.
-            pos[i].m_x = (640.0 / 2.0) - 16.0;
-            pos[i].m_y = (480.0 / 2.0) - 16.0;
+            pos[i].m_x = (640.0 / 2.0) - 8.0;
+            pos[i].m_y = (480.0 / 2.0) - 8.0;
 
             vel[i].m_vel_x = randomize_velocity_dir(ball[i].m_initial_vel_x);
             vel[i].m_vel_y = randomize_velocity_dir(ball[i].m_initial_vel_y);

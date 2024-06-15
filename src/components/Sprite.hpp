@@ -29,11 +29,6 @@ struct Sprite
     int m_height;
 
     ///
-    /// Stores the radius of a circle.
-    ///
-    int m_radius;
-
-    ///
     /// Stores the colour of the sprite.
     ///
     SDL_Colour m_colour;

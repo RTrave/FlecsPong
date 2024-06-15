@@ -24,6 +24,8 @@ InputSystem::InputSystem(Game* game, Window *window)
     m_window = window;
     m_azerty = false;
 }
+int balln_id = 1;
+
 
 void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, Velocity *velocity)
 {
@@ -141,9 +143,25 @@ void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, 
                         break;
 
                     case SDLK_b: // Create a new ball
-                        input_system->m_game->createBall();
+                    {
+                        std::string ball_namen("Ball");
+                        ball_namen += std::to_string(balln_id++);
+                    //    printf("New ball: %s\n", ball_name.c_str());
+                        it.world().entity(ball_namen.c_str())
+                                .set<Position>({ (640 / 2.0) - 8.0, (480 / 2.0) - 8.0 })
+                                .set<RenderPosition>({ (640 / 2.0) - 8.0, (480 / 2.0) - 8.0 })
+                                .set<Velocity>({ 0.25, 0.25 })
+                                .set<Ball>({ 0, 0.25, 0.25 })
+                                .set([](Sprite &spr)
+                        {
+                            spr.m_width = 16;
+                            spr.m_height = 16;
+                            spr.m_colour = SDL_Colour
+                            {   255, 255, 255, 255};
+                        });
+//                        input_system->m_game->createBall();
                         break;
-
+                    }
                     case SDLK_k: // Create nb balls
                         input_system->m_game->createKBalls(50000);
                         break;

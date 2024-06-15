@@ -7,3 +7,4 @@
 #include "Sprite.hpp"
 #include "Velocity.hpp"
 #include "Paddle.hpp"
+#include "RenderPosition.hpp"

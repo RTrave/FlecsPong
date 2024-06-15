@@ -38,7 +38,7 @@ int main(int argsc, char *argsv[])
                         | SDL_WINDOW_MOUSE_FOCUS | SDL_WINDOW_ALLOW_HIGHDPI);
         if (cmdOptionExists(argsv, argsv + argsc, "-mt"))
         {
-            printf("Multi threaded\n");
+            return pong.run_MT();
         }
         return pong.run();
     }

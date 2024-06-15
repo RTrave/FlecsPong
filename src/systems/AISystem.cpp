@@ -23,16 +23,26 @@ AISystem::AISystem(Game *game, Window* window)
     m_window = window;
 }
 
-flecs::entity AISystem::findBall()
+flecs::entity AISystem::findBall(flecs::world world)
 {
     flecs::entity target_ball = m_game->m_ecs.entity().null();
     double max_x = 0.0;
-    m_game->m_ecs.each([&](flecs::entity bb, Ball& tball, Position& tball_pos, Velocity& tball_vel) {
-        if(tball_vel.m_vel_x>=0 and tball_pos.m_x>max_x) {
+    flecs::filter<const Ball, const Position, const Velocity> q =
+            world.filter<const Ball, const Position, const Velocity>()
+           ;
+    q.each([&](flecs::entity bb, const Ball& tball, const Position& tball_pos1, const Velocity& tball_vel1) {
+        if(tball_vel1.m_vel_x>=0 and tball_pos1.m_x>max_x) {
             target_ball = bb;
-            max_x = tball_pos.m_x;
+            max_x = tball_pos1.m_x;
         }
     });
+
+//    world.each([&](flecs::entity bb, Ball& tball, Position& tball_pos, Velocity& tball_vel) {
+//        if(tball_vel.m_vel_x>=0 and tball_pos.m_x>max_x) {
+//            target_ball = bb;
+//            max_x = tball_pos.m_x;
+//        }
+//    });
     return target_ball;
 }
 
@@ -41,7 +51,7 @@ void aiSystem_process(flecs::iter &it, const AI *ai, const Paddle *pad, Velocity
 {
     AISystem * aisystem = static_cast<AISystem*>(it.ctx());
 
-    auto target_ball = aisystem->findBall();
+    auto target_ball = aisystem->findBall(it.world());
     if(!target_ball.is_valid()) {
         if (240.0 >= (pos->m_y+(3*spr->m_height/4)))
         {
