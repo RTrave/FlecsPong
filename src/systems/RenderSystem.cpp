@@ -42,17 +42,19 @@ void renderSystem_process(flecs::iter &it, const Sprite *spr,
     SDL_Rect draw_rect;
     for (auto i : it)
     {
+        if(pos[i].m_x < 0.0 || pos[i].m_x > (640.0 - 16.0))
+            continue;
         // Initialize draw Rect
-        if(render->isThreaded())
-        {
-            draw_rect.x = rpos[i].m_x;
-            draw_rect.y = rpos[i].m_y;
-        }
-        else
-        {
+//        if(render->isThreaded())
+//        {
             draw_rect.x = pos[i].m_x;
             draw_rect.y = pos[i].m_y;
-        }
+//        }
+//        else
+//        {
+//            draw_rect.x = pos[i].m_x;
+//            draw_rect.y = pos[i].m_y;
+//        }
         draw_rect.w = spr[i].m_width;
         draw_rect.h = spr[i].m_height;
 

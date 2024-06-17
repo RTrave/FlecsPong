@@ -45,8 +45,21 @@ void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
     // Player2 bounding box
     const SDL_Rect player2_bb {static_cast<int>(player2_pos.m_x), static_cast<int>(player2_pos.m_y), player2_spr.m_width, player2_spr.m_height};
 
+//    int maxballs_reload = 5000;
 
     for (auto i : it) {
+        // Lock Ball to screen.
+        if (pos[i].m_y < 0.0)
+        {
+            pos[i].m_y = 0.0;
+            vel[i].m_vel_y = -vel[i].m_vel_y;
+        }
+        else if (pos[i].m_y > (480.0 - spr[i].m_height)) // screen width - sprite width
+        {
+            pos[i].m_y = (480.0 - spr[i].m_height);
+            vel[i].m_vel_y = -vel[i].m_vel_y;
+        }
+
         // If the ball is currently immune we can count down the ticks and return.
         if (ball[i].m_bounce_immune_ticks > 0)
         {
@@ -74,7 +87,7 @@ void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
                 // Reverse ball, "bouncing" it.
                 vel[i].m_vel_x *= -1;
                 // Set bounce immunity for a few ticks to prevent ball from getting stuck inside the paddle.
-                ball[i].m_bounce_immune_ticks = 30;
+                ball[i].m_bounce_immune_ticks = 60;
             }
         }
 

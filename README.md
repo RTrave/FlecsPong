@@ -22,6 +22,8 @@ Entity, Component ans Query natives from Flecs, System are custom as in EnttPong
 
 Rewritted code to feat a more Flecs native API (Entity, Component, Query, Iter, Pipeline(mod) and System(mod)), 
 reworked Components (add Paddle and Movement, removing Player, modified AI) and adapted Systems
+Launch multi-thread engine with:
+flecspong -mt 
 
 Few fun enhancements:
 - type f to switch to azerty keyboard (Z/S)

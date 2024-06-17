@@ -33,6 +33,11 @@ Game::Game(std::string_view title, const int w, const int h,
         throw_sdl2_exception("Failed to init SDL2.");
     }
 
+//    m_dt = 1000.0 / 60.0;
+    m_fps_time = SDL_GetTicks();
+    m_fps_ticks = 0;
+    m_fps_frametime_max = m_dt;
+    m_fps_frametime_min = m_dt;
     m_window.create(title, w, h, flags);
 
     printf("FlecsPong\n");
@@ -155,7 +160,13 @@ void Game::systemsInit()
 void Game::systemsInit_MT()
 {
     m_ecs.set_stage_count(5);
-    m_ecs.set_threads(2);
+//    m_ecs.set_threads(4);
+    m_thr_stage_0 = m_ecs.get_stage(0);
+    m_thr_stage_1 = m_ecs.get_stage(1);
+//    m_ecs.set_automerge(false);
+//    m_thr_stage_0.set_automerge(false);
+//    m_thr_stage_1.set_automerge(false);
+//    m_ecs.set_target_fps(60.0);
 
 
     // Set up collideables
@@ -178,7 +189,7 @@ void Game::systemsInit_MT()
 
     // Set up Move system (updating Position)
     m_movesys = m_ecs.system<Velocity, Position, const Sprite>("MoveSystem")
-        .multi_threaded()
+//        .multi_threaded()
         .iter(moveSystem_process);
 
     // Set up Collision system (updating Movement and Position), and
@@ -186,14 +197,14 @@ void Game::systemsInit_MT()
     m_collisionsys = m_ecs.system<Ball, Position, Velocity, const Sprite>("CollisionSystem")
 //                .kind(flecs::PostUpdate)
             .ctx(static_cast<void*>(&m_collideables))
-            .multi_threaded()
+//            .multi_threaded()
             .iter(collisionSystem_process);
 
     m_sync_system = new SyncSystem();
     m_syncsys = m_ecs.system<const Position, RenderPosition>("SyncSystem")
 //                .kind(flecs::PreStore)
             .ctx(static_cast<void*>(m_sync_system))
-            .multi_threaded()
+//            .multi_threaded()
             .iter(syncSystem_process);
 
     // Setup Render Systems, Flush and Draw are tasks
@@ -208,7 +219,8 @@ void Game::systemsInit_MT()
             .iter(renderSystem_process);
     m_rendersys_draw = m_ecs.system("RenderSystemDraw")
 //                .kind(flecs::OnStore)
-            .ctx(static_cast<void*>(m_render_system)).iter(renderSystem_draw);
+            .ctx(static_cast<void*>(m_render_system))
+            .iter(renderSystem_draw);
 
 //    m_systemMutex = SDL_CreateMutex();
 //    m_systemFlag = THREAD_STATE_OFF;
@@ -228,9 +240,10 @@ void Game::threadLoop()
     printf("System Thread launch\n");
     m_systemFlag = THREAD_STATE_ON;
     double frame_time;
-    m_thr_stage_1 = m_ecs.get_stage(1);
+//    m_thr_stage_1 = m_ecs.get_stage(1);
     while (m_systemFlag == THREAD_STATE_ON)
     {
+        // Wait for the drawn flag ON to process a new tick
         while(!m_drawnFlag && m_systemFlag == THREAD_STATE_ON)
         {
             SDL_UnlockMutex(m_systemMutex);
@@ -240,17 +253,26 @@ void Game::threadLoop()
 
         frame_time = m_frame_time;
         SDL_UnlockMutex(m_systemMutex);
+
+        // Call AI, Move the Collision systems
         m_aisys.run(frame_time).stage(m_thr_stage_1);
-//        m_movesys.run(frame_time).stage(thr_stage_1);
-        m_movesys.run_worker(0,2,frame_time).stage(m_thr_stage_1);
+        m_movesys.run(frame_time).stage(m_thr_stage_1);
+//        m_movesys.run_worker(0,2,frame_time).stage(m_thr_stage_1);
+//        m_movesys.run_worker(1,2,frame_time).stage(m_thr_stage_1);
+
+        // Sync system unused
 //        m_syncsys.run_worker(0,2,frame_time).stage(m_thr_stage_1);
-//        m_collisionsys.run(frame_time).stage(thr_stage_1);
-        m_collisionsys.run_worker(0,2,frame_time).stage(m_thr_stage_1);
+        m_collisionsys.run(frame_time).stage(m_thr_stage_1);
+//        m_collisionsys.run_worker(0,2,frame_time).stage(m_thr_stage_1);
+//        m_collisionsys.run_worker(1,2,frame_time).stage(m_thr_stage_1);
+
+        // Put the drawn flag OFF the wait the new tick
         SDL_LockMutex(m_systemMutex);
         m_drawnFlag = false;
     }
     m_systemFlag = THREAD_STATE_OFF;
     SDL_UnlockMutex(m_systemMutex);
+    printf("System Thread stop\n");
 }
 
 const int Game::run()
@@ -268,6 +290,7 @@ const int Game::run()
     double fps_time = SDL_GetTicks();
     double fps_ticks = 0;
 
+    flecs::log::set_level(1);
     while (m_window.is_open())
     {
         // Create balls if request
@@ -285,11 +308,12 @@ const int Game::run()
         // Call the system processing
         m_ecs.progress(frame_time);
 
-
+        // Print FPS every 5s
         fps_ticks++;
-        if(fps_ticks!=0 and (SDL_GetTicks()-fps_time)>1000) {
-            printf("FPS: %f\n",
-                    fps_ticks*1000/(SDL_GetTicks()-fps_time));
+        if(fps_ticks!=0 and (SDL_GetTicks()-fps_time)>5000) {
+            printf("FPS: %f Ticks: %f FT: %f\n",
+                    fps_ticks*1000/(SDL_GetTicks()-fps_time),
+                    fps_ticks, frame_time);
             fps_time = SDL_GetTicks();
             fps_ticks = 0;
         }
@@ -299,10 +323,12 @@ const int Game::run()
         time = SDL_GetTicks();
         frame_time = time - old_time;
         if (dt > frame_time)
-            SDL_Delay(1);
-//            SDL_Delay(dt - frame_time);
+            SDL_Delay(dt - frame_time);
+        time = SDL_GetTicks();
+        frame_time = time - old_time;
     }
 
+    flecs::log::set_level(-1);
     m_window.destroy();
     SDL_Delay(200);
     return EXIT_SUCCESS;
@@ -315,18 +341,17 @@ const int Game::run_MT()
 
     // 60 updates per second. We divide 1000 by 60 instead of 1 because sdl operates on milliseconds
     // not nanoseconds.
-    const constexpr double dt = 1000.0 / 60.0;
+//    const constexpr double dt = 1000.0 / 60.0;
 //    m_ecs.set_target_fps(240.0);
 
     double time = SDL_GetTicks();
     double old_time = 0.0;
-    double frame_time = dt/2;
-    double fps_time = SDL_GetTicks();
-    double fps_ticks = 0;
+    double frame_time = m_dt;
 
-    m_thr_stage_0 = m_ecs.get_stage(0);
-    m_frame_time = dt/2;
+//    m_thr_stage_0 = m_ecs.get_stage(0);
+    m_frame_time = m_dt/2;
     m_drawnFlag = false;
+//    m_thr_stage_0.set_automerge(true);
 
     SDL_LockMutex(m_systemMutex);
     m_systemThread = SDL_CreateThread(threadSystem,
@@ -342,6 +367,7 @@ const int Game::run_MT()
 
     while (m_window.is_open())
     {
+        // Wait for System thread (even if its sure finished)
         SDL_LockMutex(m_systemMutex);
         while(m_drawnFlag)
         {
@@ -365,32 +391,52 @@ const int Game::run_MT()
                 printf("K Balls created\n");
         }
 
+        // Checks players inputs
         m_inputsys.run(frame_time).stage(m_thr_stage_0);
-//      m_syncsys.run(m_frame_time).stage(m_thr_stage_0);
-        m_syncsys.run_worker(0,2,m_frame_time).stage(m_thr_stage_0);
+//        m_thr_stage_0.merge();
+
+        // Sync system unused (Flecs cache is enough)
+//        m_syncsys.run(m_frame_time).stage(m_thr_stage_0);
+//        m_syncsys.run_worker(0,2,m_frame_time).stage(m_thr_stage_0);
+
+        // Unfreeze System thread and update its frame time
         SDL_LockMutex(m_systemMutex);
         m_drawnFlag = true;
         m_frame_time = frame_time;
         SDL_UnlockMutex(m_systemMutex);
-        m_rendersys_flush.run(frame_time);
-        m_rendersys.run(frame_time).stage(m_thr_stage_0);
-        m_rendersys_draw.run(frame_time);
 
-        fps_ticks++;
-        if(fps_ticks!=0 and (SDL_GetTicks()-fps_time)>1000) {
-            printf("FPS: %f\n",
-                    fps_ticks*1000/(SDL_GetTicks()-fps_time));
-            fps_time = SDL_GetTicks();
-            fps_ticks = 0;
+        // Now render the scene
+        m_rendersys_flush.run(frame_time).stage(m_thr_stage_0);
+        m_rendersys.run(frame_time).stage(m_thr_stage_0);
+        m_rendersys_draw.run(frame_time).stage(m_thr_stage_0);
+
+        // Print FPS every 5s
+        m_fps_ticks++;
+        if(frame_time<m_fps_frametime_min)
+            m_fps_frametime_min = frame_time;
+        if(frame_time>m_fps_frametime_max)
+            m_fps_frametime_max = frame_time;
+
+        if(m_fps_ticks!=0 and (SDL_GetTicks()-m_fps_time)>5000) {
+            printf("FPS: %.2f Ticks: %.0f av.FT: %.2f (min:%.0f max:%.0f)\n",
+                    m_fps_ticks*1000/(SDL_GetTicks()-m_fps_time),
+                    m_fps_ticks, (SDL_GetTicks()-m_fps_time)/m_fps_ticks,
+                    m_fps_frametime_min, m_fps_frametime_max);
+            m_fps_time = SDL_GetTicks();
+            m_fps_ticks = 0;
+            m_fps_frametime_min = m_dt;
+            m_fps_frametime_max = m_dt;
         }
 
         // Check for delay to wait for before next frame
         old_time = time;
         time = SDL_GetTicks();
         frame_time = time - old_time;
-        if (dt > frame_time)
-            SDL_Delay(1);
-//            SDL_Delay(dt - frame_time);
+        if (m_dt > frame_time)
+//            SDL_Delay(16);
+            SDL_Delay(m_dt - frame_time);
+        time = SDL_GetTicks();
+        frame_time = time - old_time;
     }
 
     m_window.destroy();
@@ -399,7 +445,7 @@ const int Game::run_MT()
 }
 
 
-int ball_id = 1;
+static int ball_id = 1;
 
 flecs::entity Game::createBall()
 {

@@ -149,6 +149,7 @@
 #define FLECS_CPP           /**< C++ API */
 #define FLECS_SYSTEM        /**< System support */
 #define FLECS_PIPELINE      /**< Pipeline support */
+#define FLECS_LOG           /**< When enabled ECS provides more detailed logs */
 
 /** @def FLECS_CPP_NO_AUTO_REGISTRATION
  * When set, the C++ API will require that components are registered before they

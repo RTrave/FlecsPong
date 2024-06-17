@@ -167,8 +167,6 @@ private:
     flecs::system m_rendersys;
     flecs::system m_rendersys_draw;
 
-    flecs::world m_thr_stage_0;
-    flecs::world m_thr_stage_1;
     ///
     /// Thread management properties
     ///
@@ -178,6 +176,8 @@ private:
     Uint32 m_threadid;
     double m_frame_time;
     bool m_drawnFlag;
+    flecs::world m_thr_stage_0;
+    flecs::world m_thr_stage_1;
 
     ///
     /// Entity for Player 1
@@ -188,6 +188,14 @@ private:
     /// Entity for Player 2
     ///
     flecs::entity m_player2;
+    ///
+    /// FPS calculation
+    ///
+    const double m_dt = 1000.0 / 60.0;
+    double m_fps_time;
+    double m_fps_ticks;
+    double m_fps_frametime_max;
+    double m_fps_frametime_min;
 };
 
 } // namespace ep

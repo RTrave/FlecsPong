@@ -25,7 +25,7 @@ AISystem::AISystem(Game *game, Window* window)
 
 flecs::entity AISystem::findBall(flecs::world world)
 {
-    flecs::entity target_ball = m_game->m_ecs.entity().null();
+    flecs::entity target_ball = flecs::entity().null();
     double max_x = 0.0;
     flecs::filter<const Ball, const Position, const Velocity> q =
             world.filter<const Ball, const Position, const Velocity>()
@@ -36,13 +36,6 @@ flecs::entity AISystem::findBall(flecs::world world)
             max_x = tball_pos1.m_x;
         }
     });
-
-//    world.each([&](flecs::entity bb, Ball& tball, Position& tball_pos, Velocity& tball_vel) {
-//        if(tball_vel.m_vel_x>=0 and tball_pos.m_x>max_x) {
-//            target_ball = bb;
-//            max_x = tball_pos.m_x;
-//        }
-//    });
     return target_ball;
 }
 
