@@ -98,6 +98,15 @@ public:
     ///
     flecs::world m_ecs;
 
+    ///
+    /// Use multi-thread
+    ///
+    bool m_multithreaded = false;
+
+    flecs::world m_thr_stage_0;
+    flecs::world m_thr_stage_1;
+    flecs::world m_thr_stage_2;
+
 private:
     ///
     /// Deleted default constructor.
@@ -141,19 +150,9 @@ private:
     RenderSystem *m_render_system;
 
     ///
-    /// The Render system.
-    ///
-    SyncSystem *m_sync_system;
-
-    ///
     /// Balls to create
     ///
     int m_ballsToCreate = 0;
-
-    ///
-    /// Use multi-thread
-    ///
-    bool m_multithreaded = false;
 
     ///
     /// Keep references of each system
@@ -161,7 +160,6 @@ private:
     flecs::system m_inputsys;
     flecs::system m_aisys;
     flecs::system m_movesys;
-    flecs::system m_syncsys;
     flecs::system m_collisionsys;
     flecs::system m_rendersys_flush;
     flecs::system m_rendersys;
@@ -176,8 +174,6 @@ private:
     Uint32 m_threadid;
     double m_frame_time;
     bool m_drawnFlag;
-    flecs::world m_thr_stage_0;
-    flecs::world m_thr_stage_1;
 
     ///
     /// Entity for Player 1

@@ -33,6 +33,11 @@ public:
     ///
     /// Find ball to target
     ///
+    flecs::entity findBall_MT(flecs::world world);
+
+    ///
+    /// Find ball to target
+    ///
     flecs::entity findBall(flecs::world world);
 
     ///
@@ -46,8 +51,8 @@ public:
     Window *m_window;
 };
 
-void aiSystem_process(flecs::iter &it, const AI *ai, const Paddle *pad,
-        Velocity *vel, const Position *pos, const Sprite *spr);
+void aiSystem_process(flecs::iter &it, size_t index, const AI &ai, const Paddle &pad,
+        Velocity &vel, const Position &pos, const Sprite &spr);
 
 } // namespace ep
 

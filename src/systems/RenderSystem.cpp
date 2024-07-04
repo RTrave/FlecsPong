@@ -10,14 +10,12 @@
 //#include <SDL2/SDL2_gfxPrimitives.h>
 
 #include "../components/Position.hpp"
-#include "../components/RenderPosition.hpp"
 #include "../components/Sprite.hpp"
 #include "../core/Window.hpp"
 
 #include "RenderSystem.hpp"
 
-namespace fp
-{
+namespace fp {
 
 RenderSystem::RenderSystem(Window *window, bool is_threaded)
 {
@@ -29,43 +27,31 @@ void renderSystem_flush(flecs::iter &it)
 {
     // Flush renderer.
     RenderSystem *render = static_cast<RenderSystem*>(it.ctx());
-    SDL_SetRenderDrawColor(render->m_window->renderer(),
-                           0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(render->m_window->renderer(), 0, 0, 0,
+            SDL_ALPHA_OPAQUE);
     SDL_RenderClear(render->m_window->renderer());
 }
 
-void renderSystem_process(flecs::iter &it, const Sprite *spr,
-                          const Position *pos,
-                          const RenderPosition *rpos)
+void renderSystem_process(flecs::iter &it, size_t i, const Sprite &spr,
+        const Position &pos)
 {
     RenderSystem *render = static_cast<RenderSystem*>(it.ctx());
     SDL_Rect draw_rect;
-    for (auto i : it)
-    {
-        if(pos[i].m_x < 0.0 || pos[i].m_x > (640.0 - 16.0))
-            continue;
-        // Initialize draw Rect
-//        if(render->isThreaded())
-//        {
-            draw_rect.x = pos[i].m_x;
-            draw_rect.y = pos[i].m_y;
-//        }
-//        else
-//        {
-//            draw_rect.x = pos[i].m_x;
-//            draw_rect.y = pos[i].m_y;
-//        }
-        draw_rect.w = spr[i].m_width;
-        draw_rect.h = spr[i].m_height;
+    if (pos.m_x < 0.0 || pos.m_x > (640.0 - 16.0))
+        return;
 
-        // First we set the rectangle fill colour to that of the spritecomponents.
-        SDL_SetRenderDrawColor(render->m_window->renderer(),
-                spr[i].m_colour.r, spr[i].m_colour.g, spr[i].m_colour.b,
-                spr[i].m_colour.a);
+    // Initialize draw Rect
+    draw_rect.x = pos.m_x;
+    draw_rect.y = pos.m_y;
+    draw_rect.w = spr.m_width;
+    draw_rect.h = spr.m_height;
 
-        // Now the rectangle gets renderered with the appropriate colours and position data to the window.
-        SDL_RenderFillRect(render->m_window->renderer(), &draw_rect);
-    }
+    // First we set the rectangle fill colour to that of the spritecomponents.
+    SDL_SetRenderDrawColor(render->m_window->renderer(), spr.m_colour.r,
+            spr.m_colour.g, spr.m_colour.b, spr.m_colour.a);
+
+    // Now the rectangle gets renderered with the appropriate colours and position data to the window.
+    SDL_RenderFillRect(render->m_window->renderer(), &draw_rect);
 }
 
 void renderSystem_draw(flecs::iter &it)

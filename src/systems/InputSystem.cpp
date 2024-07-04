@@ -14,27 +14,33 @@
 
 #include "InputSystem.hpp"
 
-namespace fp
-{
+namespace fp {
 
+InputSystem *input_system;
 
-InputSystem::InputSystem(Game* game, Window *window)
+InputSystem::InputSystem(Game *game, Window *window)
 {
     m_game = game;
     m_window = window;
     m_azerty = false;
+    m_queryPlayer =
+            game->m_ecs.query_builder<const Player, Paddle, Velocity>()
+                .filter()
+                .build();
+    input_system = this;
 }
+
 int balln_id = 1;
 
-
-void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, Velocity *velocity)
+bool InputSystem::processPlayerEvent(flecs::iter &it)
 {
-    InputSystem * input_system = static_cast<InputSystem*>(it.ctx());
-
-    // Process all user and system events.
-    while (SDL_PollEvent(&input_system->m_window->m_event) != 0)
+    bool event_ok = false;
+    while (it.next())
     {
-        bool event_ok = false;
+//            auto player = it.field<const Player>(0);
+        auto paddle = it.field<Paddle>(1);
+        auto velocity = it.field<Velocity>(2);
+
         for (auto i : it)
         {
             switch (input_system->m_window->m_event.type)
@@ -42,7 +48,7 @@ void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, 
             case SDL_KEYDOWN:
 
                 // Player1 controls
-                if(it.entity(i).name()=="Player1")
+                if (it.entity(i).name() == "Player1")
                 {
                     if (input_system->isAzerty())
                     {
@@ -80,21 +86,21 @@ void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, 
                     }
                 }
                 // Player2 controls
-                else if(it.entity(i).name()=="Player2")
+                else if (it.entity(i).name() == "Player2")
                 {
                     switch (input_system->m_window->m_event.key.keysym.sym)
                     {
-                         case SDLK_UP:
-                            event_ok = true;
-                            paddle[i].m_movement = Paddle::MoveDirection::NORTH;
-                            velocity[i].m_vel_y = -paddle[i].m_velocity;
-                            break;
+                    case SDLK_UP:
+                        event_ok = true;
+                        paddle[i].m_movement = Paddle::MoveDirection::NORTH;
+                        velocity[i].m_vel_y = -paddle[i].m_velocity;
+                        break;
 
-                        case SDLK_DOWN:
-                            event_ok = true;
-                            paddle[i].m_movement = Paddle::MoveDirection::SOUTH;
-                            velocity[i].m_vel_y = paddle[i].m_velocity;
-                            break;
+                    case SDLK_DOWN:
+                        event_ok = true;
+                        paddle[i].m_movement = Paddle::MoveDirection::SOUTH;
+                        velocity[i].m_vel_y = paddle[i].m_velocity;
+                        break;
                     }
                 }
                 break;
@@ -103,8 +109,10 @@ void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, 
                 if (it.entity(i).name() == "Player1")
                 {
                     if (input_system->m_window->m_event.key.keysym.sym == SDLK_w
-                            || input_system->m_window->m_event.key.keysym.sym == SDLK_s
-                            || input_system->m_window->m_event.key.keysym.sym == SDLK_z)
+                            || input_system->m_window->m_event.key.keysym.sym
+                                    == SDLK_s
+                            || input_system->m_window->m_event.key.keysym.sym
+                                    == SDLK_z)
                     {
                         event_ok = true;
                         paddle[i].m_movement = Paddle::MoveDirection::STOPPED;
@@ -116,7 +124,8 @@ void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, 
                 {
                     if (input_system->m_window->m_event.key.keysym.sym
                             == SDLK_UP
-                            || input_system->m_window->m_event.key.keysym.sym == SDLK_DOWN)
+                            || input_system->m_window->m_event.key.keysym.sym
+                                    == SDLK_DOWN)
                     {
                         event_ok = true;
                         paddle[i].m_movement = Paddle::MoveDirection::STOPPED;
@@ -125,61 +134,88 @@ void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle, 
                 }
                 break;
             }
-            if(event_ok) return;
         }
-        // General controls
-        switch (input_system->m_window->m_event.type)
+
+    }
+    return event_ok;
+}
+
+void InputSystem::processGlobalEvent()
+{
+    switch (input_system->m_window->m_event.type)
+    {
+    case SDL_QUIT:
+        input_system->m_window->close();
+        break;
+
+    case SDL_KEYDOWN:
+        switch (input_system->m_window->m_event.key.keysym.sym)
         {
-            case SDL_QUIT:
-                input_system->m_window->close();
-                break;
+        case SDLK_n: // Reset game
+            input_system->m_game->reset();
+            input_system->m_game->createKBalls(1);
+            break;
 
-            case SDL_KEYDOWN:
-                switch (input_system->m_window->m_event.key.keysym.sym)
-                {
-                    case SDLK_n: // Reset game
-                        input_system->m_game->reset();
-                        input_system->m_game->createBall();
-                        break;
-
-                    case SDLK_b: // Create a new ball
-                    {
-//                        std::string ball_namen("Ball");
-//                        ball_namen += std::to_string(balln_id++);
-//                    //    printf("New ball: %s\n", ball_name.c_str());
-//                        it.world().entity(ball_namen.c_str())
-//                                .set<Position>({ (640 / 2.0) - 8.0, (480 / 2.0) - 8.0 })
-//                                .set<RenderPosition>({ (640 / 2.0) - 8.0, (480 / 2.0) - 8.0 })
-//                                .set<Velocity>({ 0.25, 0.25 })
-//                                .set<Ball>({ 0, 0.25, 0.25 })
-//                                .set([](Sprite &spr)
-//                        {
-//                            spr.m_width = 16;
-//                            spr.m_height = 16;
-//                            spr.m_colour = SDL_Colour
-//                            {   255, 255, 255, 255};
-//                        });
-                        input_system->m_game->createBall();
-                        break;
-                    }
-                    case SDLK_k: // Create nb balls
-                        input_system->m_game->createKBalls(50000);
-                        break;
-
-                    case SDLK_v: // Switch PVP/Player for Paddle2
-                        input_system->m_game->switchPVP();
-                        break;
-
-                    case SDLK_f: // Switch PVP/Player for Paddle2
-                        input_system->switchAzerty();
-                        break;
-
-                    case SDLK_ESCAPE: // Quit FlecsPong
-                        input_system->m_window->close();
-                        break;
-                }
-                break;
+        case SDLK_b: // Create a new ball
+        {
+            input_system->m_game->createBall();
+            break;
         }
+        case SDLK_k: // Create nb balls
+            input_system->m_game->createKBalls(50000);
+            break;
+
+        case SDLK_v: // Switch PVP/Player for Paddle2
+            input_system->m_game->switchPVP();
+            break;
+
+        case SDLK_f: // Switch PVP/Player for Paddle2
+            input_system->switchAzerty();
+            break;
+
+        case SDLK_ESCAPE: // Quit FlecsPong
+            input_system->m_window->close();
+            break;
+        }
+        break;
+    }
+}
+
+bool event_ok = false;
+
+void inputSystem_process(flecs::iter &iter)
+{
+    event_ok = false;
+
+    // Process all user and system events.
+    while (SDL_PollEvent(&input_system->m_window->m_event) != 0)
+    {
+
+        if (input_system->m_game->m_multithreaded)
+        {
+            input_system->m_queryPlayer
+                .iter(input_system->m_game->m_thr_stage_0)
+                .run([](flecs::iter &it) {
+
+                event_ok = input_system->processPlayerEvent(it);
+
+            });
+        }
+        else
+        {
+            input_system->m_queryPlayer
+                .run([](flecs::iter &it)
+            {
+
+                event_ok = input_system->processPlayerEvent(it);
+
+            });
+        }
+
+        // General controls
+        if (!event_ok)
+            input_system->processGlobalEvent();
+
     }
 }
 

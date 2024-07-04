@@ -35,6 +35,12 @@ public:
     ///
     ~InputSystem() = default;
 
+    ///
+    /// InputSystem process
+    ///
+    bool processPlayerEvent(flecs::iter &iter);
+    void processGlobalEvent();
+
     bool isAzerty() const
     {
         return m_azerty;
@@ -62,10 +68,15 @@ public:
     /// Switch to/from azerty keyboard
     ///
     bool m_azerty;
+
+    ///
+    /// Input Players query
+    ///
+    flecs::query<const Player, Paddle, Velocity> m_queryPlayer;
 };
 
-void inputSystem_process(flecs::iter &it, const Player *player, Paddle *paddle,
-        Velocity *velocity);
+void inputSystem_process(flecs::iter &iter);
+//void inputSystem_process_MT(flecs::iter &iter);
 
 } // namespace ep
 

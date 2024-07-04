@@ -21,8 +21,7 @@ struct CollisionHolder
     int score_player2;
 };
 
-void collisionSystem_process(flecs::iter &it, Ball *ball, Position *pos,
-        Velocity *vel, const Sprite *spr);
+void collisionSystem_process(flecs::iter &it);
 
 } // namespace ep
 

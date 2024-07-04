@@ -48,9 +48,8 @@ private:
 };
 
 void renderSystem_flush(flecs::iter &it);
-void renderSystem_process(flecs::iter &it, const Sprite *spr,
-        const Position *pos,
-        const RenderPosition *rpos);
+void renderSystem_process(flecs::iter& it, size_t i,
+        const Sprite &spr, const Position &pos);
 void renderSystem_draw(flecs::iter &it);
 
 } // namespace ep

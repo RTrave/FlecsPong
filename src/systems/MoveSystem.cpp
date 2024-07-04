@@ -16,29 +16,34 @@
 namespace fp
 {
 
-void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, const Sprite *spr)
+void moveSystem_process(flecs::iter &it, size_t i, Velocity &vel, Position &pos, const Sprite &spr)
 {
-    const double time = it.delta_time();
+    const double time = it.delta_time()*1000;
+//    printf("time = %f %s %f %f\n", time, it.entity(i).name().c_str(),
+//            pos.m_x, vel.m_vel_x);
 
     // Iterate entities
-    for (auto i : it) {
+//    while (it.next()) {
+//    for (auto i : it) {
 
-        pos[i].m_x += vel[i].m_vel_x * time;
-        pos[i].m_y += vel[i].m_vel_y * time;
+        pos.m_x += vel.m_vel_x * time;
+        pos.m_y += vel.m_vel_y * time;
 
+//        printf("time = %f %s %f %f\n", time, it.entity(i).name().c_str(),
+//                pos.m_x, vel.m_vel_x);
         // Lock Paddle to screen.
-        if (pos[i].m_y < 0.0)
+        if (pos.m_y < 0.0)
         {
             if(it.entity(i).has<Paddle>())
             {
-                pos[i].m_y = 0.0;
+                pos.m_y = 0.0;
             }
         }
-        else if (pos[i].m_y > (480.0 - spr[i].m_height)) // screen width - sprite width
+        else if (pos.m_y > (480.0 - spr.m_height)) // screen width - sprite width
         {
             if(it.entity(i).has<Paddle>())
             {
-                pos[i].m_y = (480.0 - spr[i].m_height);
+                pos.m_y = (480.0 - spr.m_height);
             }
         }
 //        if (pos[i].m_y < 0.0)
@@ -57,7 +62,8 @@ void moveSystem_process(flecs::iter &it, Velocity *vel, Position *pos, const Spr
 //            else
 //                vel[i].m_vel_y = 0.0;
 //        }
-    }
+//    }
+//    }
 }
 
 } // namespace ep
