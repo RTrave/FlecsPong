@@ -16,68 +16,79 @@
 
 namespace fp
 {
-
-flecs::world m_thr_stage;
-flecs::query<const Position, const Velocity> q;
+AISystem * aisystem;
+flecs::world thr_stage;
+flecs::query<const Position, const Velocity> qt;
 
 AISystem::AISystem(Game *game, Window* window)
 {
     m_game = game;
     m_window = window;
+    aisystem = this;
     if(m_game->m_multithreaded)
     {
-        m_thr_stage = m_game->m_ecs.get_stage(1);
+        thr_stage = m_game->m_ecs.get_stage(1);
+        qt = thr_stage.query_builder<const Position, const Velocity>()
+            .with<Ball>()
+//            .filter()
+            .build();
+    }
+    else
+    {
+        qt = m_game->m_ecs.query_builder<const Position, const Velocity>()
+                    .with<Ball>()
+                    .filter()
+        //            .instanced()
+                    .build();
     }
 }
 
-flecs::entity target_ball = flecs::entity().null();
+flecs::entity target_e = flecs::entity().null();
 double max_x = 0.0;
 
-flecs::entity AISystem::findBall_MT(flecs::world world)
+flecs::entity& AISystem::findBall_MT(flecs::iter &it)
 {
-    q = m_thr_stage.query_builder<const Position, const Velocity>()
-            .with<Ball>()
-            .build();
-    q.iter(m_thr_stage)
-            .each([](flecs::entity bb,
+    target_e = flecs::entity().null();
+    max_x = 0.0;
+    qt.iter(it).each([](flecs::entity bb,
                     const Position& bb_pos1, const Velocity& bb_vel1) {
 
         if(bb_vel1.m_vel_x>=0 and bb_pos1.m_x>max_x) {
-            target_ball = bb;
+            target_e = bb;
             max_x = bb_pos1.m_x;
         }
 
     });
-    return target_ball;
+    return target_e;
 }
 
-flecs::entity AISystem::findBall(flecs::world world)
+flecs::entity& AISystem::findBall(flecs::iter &it)
 {
-    q = world.query_builder<const Position, const Velocity>()
-            .with<Ball>()
-            .build();
-    q.each([](flecs::entity bb,
+    target_e = flecs::entity().null();
+    max_x = 0.0;
+    qt.iter().each([](flecs::entity bb,
             const Position& bb_pos1, const Velocity& bb_vel1) {
 
         if(bb_vel1.m_vel_x>=0 and bb_pos1.m_x>max_x) {
-            target_ball = bb;
+            target_e = bb;
             max_x = bb_pos1.m_x;
         }
 
     });
-    return target_ball;
+    return target_e;
 }
 
-void aiSystem_process(flecs::iter &it, size_t index, const AI &ai, const Paddle &pad,
+void aiSystem_process(flecs::iter &it, size_t i,
+        const AI &ai, const Paddle &pad,
         Velocity &vel, const Position &pos, const Sprite &spr)
 {
-    AISystem * aisystem = static_cast<AISystem*>(it.ctx());
+//    AISystem * aisystem = static_cast<AISystem*>(it.ctx());
 
     flecs::entity target_ball;
     if(aisystem->m_game->m_multithreaded)
-        target_ball = aisystem->findBall_MT(it.world());
+        target_ball = aisystem->findBall_MT(it);
     else
-        target_ball = aisystem->findBall(it.world());
+        target_ball = aisystem->findBall(it);
 
     if(!target_ball.is_valid()) {
         if (240.0 >= (pos.m_y+(3*spr.m_height/4)))

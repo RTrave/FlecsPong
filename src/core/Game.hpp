@@ -105,7 +105,7 @@ public:
 
     flecs::world m_thr_stage_0;
     flecs::world m_thr_stage_1;
-    flecs::world m_thr_stage_2;
+//    flecs::world m_thr_stage_2;
 
 private:
     ///

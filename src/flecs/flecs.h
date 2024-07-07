@@ -166,10 +166,7 @@
  *
  * which outputs the full list of addons Flecs was compiled with.
  */
-#define FLECS_CUSTOM_BUILD
-#define FLECS_CPP           /**< C++ API */
-#define FLECS_SYSTEM        /**< System support */
-#define FLECS_PIPELINE      /**< Pipeline support */
+// #define FLECS_CUSTOM_BUILD
 
 /** @def FLECS_CPP_NO_AUTO_REGISTRATION
  * When set, the C++ API will require that components are registered before they
@@ -394,7 +391,6 @@ extern "C" {
 #define EcsIdHasOnAdd                  (1u << 16) /* Same values as table flags */
 #define EcsIdHasOnRemove               (1u << 17) 
 #define EcsIdHasOnSet                  (1u << 18)
-#define EcsIdHasUnSet                  (1u << 19)
 #define EcsIdHasOnTableFill            (1u << 20)
 #define EcsIdHasOnTableEmpty           (1u << 21)
 #define EcsIdHasOnTableCreate          (1u << 22)
@@ -402,7 +398,7 @@ extern "C" {
 #define EcsIdIsSparse                  (1u << 24)
 #define EcsIdIsUnion                   (1u << 25)
 #define EcsIdEventMask\
-    (EcsIdHasOnAdd|EcsIdHasOnRemove|EcsIdHasOnSet|EcsIdHasUnSet|\
+    (EcsIdHasOnAdd|EcsIdHasOnRemove|EcsIdHasOnSet|\
         EcsIdHasOnTableFill|EcsIdHasOnTableEmpty|EcsIdHasOnTableCreate|\
             EcsIdHasOnTableDelete|EcsIdIsSparse|EcsIdIsUnion)
 
@@ -454,7 +450,7 @@ extern "C" {
 ////////////////////////////////////////////////////////////////////////////////
 
 #define EcsEventTableOnly              (1u << 18u) /* Table event (no data, same as iter flags) */
-#define EcsEventNoOnSet                (1u << 16u) /* Don't emit OnSet/UnSet for inherited ids */
+#define EcsEventNoOnSet                (1u << 16u) /* Don't emit OnSet for inherited ids */
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -534,7 +530,6 @@ extern "C" {
 #define EcsTableHasOnAdd               (1u << 16u) /* Same values as id flags */
 #define EcsTableHasOnRemove            (1u << 17u)
 #define EcsTableHasOnSet               (1u << 18u)
-#define EcsTableHasUnSet               (1u << 19u)
 #define EcsTableHasOnTableFill         (1u << 20u)
 #define EcsTableHasOnTableEmpty        (1u << 21u)
 #define EcsTableHasOnTableCreate       (1u << 22u)
@@ -549,7 +544,7 @@ extern "C" {
 #define EcsTableHasLifecycle        (EcsTableHasCtors | EcsTableHasDtors)
 #define EcsTableIsComplex           (EcsTableHasLifecycle | EcsTableHasToggle | EcsTableHasSparse)
 #define EcsTableHasAddActions       (EcsTableHasIsA | EcsTableHasCtors | EcsTableHasOnAdd | EcsTableHasOnSet)
-#define EcsTableHasRemoveActions    (EcsTableHasIsA | EcsTableHasDtors | EcsTableHasOnRemove | EcsTableHasUnSet)
+#define EcsTableHasRemoveActions    (EcsTableHasIsA | EcsTableHasDtors | EcsTableHasOnRemove)
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1421,8 +1416,8 @@ const uint64_t* flecs_sparse_ids(
     const ecs_sparse_t *sparse);
 
 /* Publicly exposed APIs 
- * The flecs_ functions aren't exposed directly as this can cause some
- * optimizers to not consider them for link time optimization. */
+ * These APIs are not part of the public API and as a result may change without
+ * notice (though they haven't changed in a long time). */
 
 FLECS_API
 void ecs_sparse_init(
@@ -3230,7 +3225,7 @@ typedef void (*flecs_poly_dtor_t)(
 typedef enum ecs_inout_kind_t {
     EcsInOutDefault,  /**< InOut for regular terms, In for shared terms */
     EcsInOutNone,     /**< Term is neither read nor written */
-    EcsInOutFilter,   /**< Same as InOutNOne + prevents term from triggering observers */
+    EcsInOutFilter,   /**< Same as InOutNone + prevents term from triggering observers */
     EcsInOut,         /**< Term is both read and written */
     EcsIn,            /**< Term is only read */
     EcsOut,           /**< Term is only written */
@@ -3386,8 +3381,8 @@ struct ecs_query_t {
     void *binding_ctx;          /**< Context to be used for language bindings */
 
     ecs_entity_t entity;        /**< Entity associated with query (optional) */
-    ecs_world_t *world;         /**< World mixin */
-    ecs_stage_t *stage;         /**< Stage the query was created with */
+    ecs_world_t *real_world;    /**< Actual world. */
+    ecs_world_t *world;         /**< World or stage query was created with. */
 
     int32_t eval_count;         /**< Number of times query is evaluated */
 };
@@ -3528,7 +3523,6 @@ struct ecs_observable_t {
     ecs_event_record_t on_add;
     ecs_event_record_t on_remove;
     ecs_event_record_t on_set;
-    ecs_event_record_t un_set;
     ecs_event_record_t on_wildcard;
     ecs_sparse_t events;  /* sparse<event, ecs_event_record_t> */
 };
@@ -3615,9 +3609,7 @@ typedef struct ecs_query_iter_t {
     uint64_t *written;
     int32_t skip_count;
 
-#ifdef FLECS_DEBUG
     ecs_query_op_profile_t *profile;
-#endif
 
     int16_t op;
     int16_t sp;
@@ -4378,7 +4370,7 @@ typedef struct ecs_observer_desc_t {
     /** Query for observer */
     ecs_query_desc_t query;
 
-    /** Events to observe (OnAdd, OnRemove, OnSet, UnSet) */
+    /** Events to observe (OnAdd, OnRemove, OnSet) */
     ecs_entity_t events[FLECS_EVENT_DESC_MAX];
 
     /** When observer is created, generate events from existing data. For example,
@@ -4869,9 +4861,6 @@ FLECS_API extern const ecs_entity_t EcsOnRemove;
 /** Event that triggers when a component is set for an entity */
 FLECS_API extern const ecs_entity_t EcsOnSet;
 
-/** Event that triggers when a component is unset for an entity */
-FLECS_API extern const ecs_entity_t EcsUnSet;
-
 /** Event that triggers observer when an entity starts/stops matching a query */
 FLECS_API extern const ecs_entity_t EcsMonitor;
 
@@ -5043,6 +5032,43 @@ void ecs_atfini(
     ecs_world_t *world,
     ecs_fini_action_t action,
     void *ctx);
+
+/** Type returned by ecs_get_entities. */
+typedef struct ecs_entities_t {
+    const ecs_entity_t *ids; /**< Array with all entity ids in the world. */
+    int32_t count;           /**< Total number of entity ids. */
+    int32_t alive_count;     /**< Number of alive entity ids. */
+} ecs_entities_t;
+
+/** Return entity identifiers in world.
+ * This operation returns an array with all entity ids that exist in the world.
+ * Note that the returned array will change and may get invalidated as a result
+ * of entity creation & deletion.
+ * 
+ * To iterate all alive entity ids, do:
+ * @code
+ * ecs_entities_t entities = ecs_get_entities(world);
+ * for (int i = 0; i < entities.alive_count; i ++) {
+ *   ecs_entity_t id = entities.ids[i];
+ * }
+ * @endcode
+ * 
+ * To iterate not-alive ids, do:
+ * @code
+ * for (int i = entities.alive_count + 1; i < entities.count; i ++) {
+ *   ecs_entity_t id = entities.ids[i];
+ * }
+ * @endcode
+ * 
+ * The returned array does not need to be freed. Mutating the returned array
+ * will return in undefined behavior (and likely crashes).
+ * 
+ * @param world The world.
+ * @return Struct with entity id array.
+ */
+FLECS_API
+ecs_entities_t ecs_get_entities(
+    const ecs_world_t *world);
 
 /** @} */
 
@@ -16380,7 +16406,6 @@ static const flecs::entity_t Phase = EcsPhase;
 static const flecs::entity_t OnAdd = EcsOnAdd;
 static const flecs::entity_t OnRemove = EcsOnRemove;
 static const flecs::entity_t OnSet = EcsOnSet;
-static const flecs::entity_t UnSet = EcsUnSet;
 static const flecs::entity_t OnTableCreate = EcsOnTableCreate;
 static const flecs::entity_t OnTableDelete = EcsOnTableDelete;
 
@@ -22392,6 +22417,9 @@ public:
      * @see ecs_iter_fini()
      */
     void fini() {
+        if (iter_->flags & EcsIterIsValid && iter_->table) {
+            ECS_TABLE_UNLOCK(iter_->world, iter_->table);
+        }
         ecs_iter_fini(iter_);
     }
 

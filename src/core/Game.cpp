@@ -117,7 +117,7 @@ void Game::systemsInit()
     // Set up Input and AI systems (updating Velocity)
     m_input_system = new InputSystem(this, &m_window);
     m_inputsys =
-            m_ecs.system<const Player, Paddle, Velocity>("InputSystem")
+            m_ecs.system("InputSystem")
             .kind(flecs::PreUpdate)
             .ctx(static_cast<void*>(m_input_system))
             .run(inputSystem_process);
@@ -162,10 +162,9 @@ void Game::systemsInit()
 
 void Game::systemsInit_MT()
 {
-    m_ecs.set_stage_count(3);
+    m_ecs.set_stage_count(2);
     m_thr_stage_0 = m_ecs.get_stage(0);
     m_thr_stage_1 = m_ecs.get_stage(1);
-    m_thr_stage_2 = m_ecs.get_stage(2);
 
     // Set up collideables
     m_collideables.player1 = m_player1;
@@ -176,7 +175,7 @@ void Game::systemsInit_MT()
     // Set up Input and AI systems (updating Velocity)
     m_input_system = new InputSystem(this, &m_window);
     m_inputsys =
-            m_ecs.system<const Player, Paddle, Velocity>("InputSystem")
+            m_ecs.system("InputSystem")
             .ctx(static_cast<void*>(m_input_system))
             .run(inputSystem_process);
 
@@ -228,7 +227,6 @@ void Game::threadLoop()
     printf("System Thread launch\n");
     m_systemFlag = THREAD_STATE_ON;
     double frame_time;
-//    m_thr_stage_1 = m_ecs.get_stage(1);
     while (m_systemFlag == THREAD_STATE_ON)
     {
 
@@ -332,15 +330,12 @@ const int Game::run_MT()
     double old_time = 0.0;
     double frame_time = m_dt;
 
-//    m_thr_stage_0 = m_ecs.get_stage(0);
     m_frame_time = m_dt / 2;
     m_drawnFlag = false;
-//    m_thr_stage_0.set_automerge(true);
 
     m_ecs.readonly_begin(true);
     m_thr_stage_0.defer_begin();
     m_thr_stage_1.defer_begin();
-    m_thr_stage_2.defer_begin();
 
     SDL_LockMutex(m_systemMutex);
     m_systemThread = SDL_CreateThread(threadSystem, "SystemThread", this);
@@ -364,17 +359,10 @@ const int Game::run_MT()
         }
         SDL_UnlockMutex(m_systemMutex);
 
-//        m_thr_stage_0.merge();
-
-        // Sync system unused (Flecs cache is enough)
-//        m_syncsys.run(m_frame_time).stage(m_thr_stage_0);
-//        m_syncsys.run_worker(0,2,m_frame_time).stage(m_thr_stage_0);
-
         // Unfreeze System thread and update its frame time
         SDL_LockMutex(m_systemMutex);
         m_thr_stage_0.defer_end();
         m_thr_stage_1.defer_end();
-        m_thr_stage_2.defer_end();
         m_ecs.readonly_end();
         m_drawnFlag = true;
         m_frame_time = frame_time;
@@ -398,7 +386,6 @@ const int Game::run_MT()
         m_ecs.readonly_begin(true);
         m_thr_stage_0.defer_begin();
         m_thr_stage_1.defer_begin();
-        m_thr_stage_2.defer_begin();
 
         SDL_UnlockMutex(m_systemMutex);
 
@@ -437,7 +424,6 @@ const int Game::run_MT()
         time = SDL_GetTicks();
         frame_time = time - old_time;
         if (m_dt > frame_time)
-//            SDL_Delay(16);
             SDL_Delay(m_dt - frame_time);
         time = SDL_GetTicks();
         frame_time = time - old_time;
@@ -445,7 +431,6 @@ const int Game::run_MT()
 
     m_thr_stage_0.defer_end();
     m_thr_stage_1.defer_end();
-    m_thr_stage_2.defer_end();
     m_ecs.readonly_end();
 
     printf("T1\n");

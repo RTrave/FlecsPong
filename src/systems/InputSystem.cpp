@@ -25,7 +25,7 @@ InputSystem::InputSystem(Game *game, Window *window)
     m_azerty = false;
     m_queryPlayer =
             game->m_ecs.query_builder<const Player, Paddle, Velocity>()
-                .filter()
+//                .filter()
                 .build();
     input_system = this;
 }

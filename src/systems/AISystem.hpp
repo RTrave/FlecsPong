@@ -33,12 +33,12 @@ public:
     ///
     /// Find ball to target
     ///
-    flecs::entity findBall_MT(flecs::world world);
+    flecs::entity& findBall_MT(flecs::iter &it);
 
     ///
     /// Find ball to target
     ///
-    flecs::entity findBall(flecs::world world);
+    flecs::entity& findBall(flecs::iter &it);
 
     ///
     /// Pointer to main game data.
@@ -51,7 +51,10 @@ public:
     Window *m_window;
 };
 
-void aiSystem_process(flecs::iter &it, size_t index, const AI &ai, const Paddle &pad,
+//void aiSystem_process(flecs::entity ai_e, const AI &ai, const Paddle &pad,
+//        Velocity &vel, const Position &pos, const Sprite &spr);
+void aiSystem_process(flecs::iter &it, size_t i,
+        const AI &ai, const Paddle &pad,
         Velocity &vel, const Position &pos, const Sprite &spr);
 
 } // namespace ep
