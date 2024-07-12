@@ -104,7 +104,6 @@ void collisionSystem_process(flecs::iter &it)
             if (pos[i].m_x < 0.0)
             {
                 holder->score_player2++;
-//            printf("Player1 %d-%d Player2\n", holder->score_player1, holder->score_player2);
                 // Ball passed the player paddle, reset it.
                 pos[i].m_x = (640.0 / 2.0) - 8.0;
                 pos[i].m_y = (480.0 / 2.0) - 8.0;
@@ -117,7 +116,6 @@ void collisionSystem_process(flecs::iter &it)
             else if (pos[i].m_x > (640.0 - 16.0)) // screen width - sprite width
             {
                 holder->score_player1++;
-//            printf("Player1 %d-%d Player2\n", holder->score_player1, holder->score_player2);
                 // Ball passed the ai paddle, reset it.
                 pos[i].m_x = (640.0 / 2.0) - 8.0;
                 pos[i].m_y = (480.0 / 2.0) - 8.0;

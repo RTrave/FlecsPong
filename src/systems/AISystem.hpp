@@ -51,8 +51,6 @@ public:
     Window *m_window;
 };
 
-//void aiSystem_process(flecs::entity ai_e, const AI &ai, const Paddle &pad,
-//        Velocity &vel, const Position &pos, const Sprite &spr);
 void aiSystem_process(flecs::iter &it, size_t i,
         const AI &ai, const Paddle &pad,
         Velocity &vel, const Position &pos, const Sprite &spr);

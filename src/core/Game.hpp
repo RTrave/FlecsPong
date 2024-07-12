@@ -92,6 +92,16 @@ public:
     ///
     void threadLoop();
 
+    flecs::world *getThrStage0()
+    {
+        return &m_thr_stage_0;
+    }
+
+    flecs::world *getThrStage1()
+    {
+        return &m_thr_stage_1;
+    }
+
     ///
     /// The default flecs world to hold and manage our entities.
     /// Public to simplify direct access by Systems

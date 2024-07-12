@@ -25,7 +25,6 @@ InputSystem::InputSystem(Game *game, Window *window)
     m_azerty = false;
     m_queryPlayer =
             game->m_ecs.query_builder<const Player, Paddle, Velocity>()
-//                .filter()
                 .build();
     input_system = this;
 }
@@ -37,7 +36,6 @@ bool InputSystem::processPlayerEvent(flecs::iter &it)
     bool event_ok = false;
     while (it.next())
     {
-//            auto player = it.field<const Player>(0);
         auto paddle = it.field<Paddle>(1);
         auto velocity = it.field<Velocity>(2);
 

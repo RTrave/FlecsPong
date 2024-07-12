@@ -102,7 +102,7 @@ Game::~Game() noexcept
     delete m_input_system;
     delete m_render_system;
     delete m_ai_system;
-    m_ecs.quit();
+//    m_ecs.quit();
     SDL_Quit();
 }
 
@@ -334,8 +334,8 @@ const int Game::run_MT()
     m_drawnFlag = false;
 
     m_ecs.readonly_begin(true);
-    m_thr_stage_0.defer_begin();
-    m_thr_stage_1.defer_begin();
+//    m_thr_stage_0.defer_begin();
+//    m_thr_stage_1.defer_begin();
 
     SDL_LockMutex(m_systemMutex);
     m_systemThread = SDL_CreateThread(threadSystem, "SystemThread", this);
@@ -361,8 +361,8 @@ const int Game::run_MT()
 
         // Unfreeze System thread and update its frame time
         SDL_LockMutex(m_systemMutex);
-        m_thr_stage_0.defer_end();
-        m_thr_stage_1.defer_end();
+//        m_thr_stage_0.defer_end();
+//        m_thr_stage_1.defer_end();
         m_ecs.readonly_end();
         m_drawnFlag = true;
         m_frame_time = frame_time;
@@ -384,8 +384,8 @@ const int Game::run_MT()
         }
 
         m_ecs.readonly_begin(true);
-        m_thr_stage_0.defer_begin();
-        m_thr_stage_1.defer_begin();
+//        m_thr_stage_0.defer_begin();
+//        m_thr_stage_1.defer_begin();
 
         SDL_UnlockMutex(m_systemMutex);
 
@@ -429,8 +429,8 @@ const int Game::run_MT()
         frame_time = time - old_time;
     }
 
-    m_thr_stage_0.defer_end();
-    m_thr_stage_1.defer_end();
+//    m_thr_stage_0.defer_end();
+//    m_thr_stage_1.defer_end();
     m_ecs.readonly_end();
 
     printf("T1\n");

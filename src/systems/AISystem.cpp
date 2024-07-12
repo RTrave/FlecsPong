@@ -6,7 +6,7 @@
 ///
 
 #include "../flecs/flecs.h"
-
+#include <iostream>
 
 #include "../components/All.hpp"
 #include "../core/Window.hpp"
@@ -14,88 +14,80 @@
 
 #include "AISystem.hpp"
 
-namespace fp
-{
-AISystem * aisystem;
-flecs::world thr_stage;
+namespace fp {
+AISystem *aisystem;
+flecs::world *thr_stage;
 flecs::query<const Position, const Velocity> qt;
 
-AISystem::AISystem(Game *game, Window* window)
+AISystem::AISystem(Game *game, Window *window)
 {
     m_game = game;
     m_window = window;
     aisystem = this;
-    if(m_game->m_multithreaded)
-    {
-        thr_stage = m_game->m_ecs.get_stage(1);
-        qt = thr_stage.query_builder<const Position, const Velocity>()
-            .with<Ball>()
-//            .filter()
-            .build();
-    }
-    else
-    {
-        qt = m_game->m_ecs.query_builder<const Position, const Velocity>()
-                    .with<Ball>()
-                    .filter()
-        //            .instanced()
-                    .build();
-    }
+    if (m_game->m_multithreaded)
+        thr_stage = m_game->getThrStage1();
 }
 
-flecs::entity target_e = flecs::entity().null();
+flecs::entity target_e;
 double max_x = 0.0;
 
 flecs::entity& AISystem::findBall_MT(flecs::iter &it)
 {
-    target_e = flecs::entity().null();
+    target_e = flecs::entity::null();
     max_x = 0.0;
-    qt.iter(it).each([](flecs::entity bb,
-                    const Position& bb_pos1, const Velocity& bb_vel1) {
-
-        if(bb_vel1.m_vel_x>=0 and bb_pos1.m_x>max_x) {
-            target_e = bb;
-            max_x = bb_pos1.m_x;
-        }
-
-    });
+    auto qtA = thr_stage
+        ->query_builder<const Position, const Velocity>()
+        .with<Ball>().build();
+    qtA.iter(*thr_stage)
+        .each([](flecs::entity bb,
+            const Position &bb_pos1, const Velocity &bb_vel1)
+        {
+            if(bb_vel1.m_vel_x>=0 and bb_pos1.m_x>max_x)
+            {
+                target_e = bb;
+                max_x = bb_pos1.m_x;
+            }
+        });
     return target_e;
 }
 
 flecs::entity& AISystem::findBall(flecs::iter &it)
 {
-    target_e = flecs::entity().null();
+    target_e = flecs::entity::null();
     max_x = 0.0;
-    qt.iter().each([](flecs::entity bb,
-            const Position& bb_pos1, const Velocity& bb_vel1) {
-
-        if(bb_vel1.m_vel_x>=0 and bb_pos1.m_x>max_x) {
-            target_e = bb;
-            max_x = bb_pos1.m_x;
-        }
-
-    });
+    auto queryTBall = aisystem->m_game->m_ecs
+        .query_builder<const Position, const Velocity>()
+        .with<Ball>().build();
+    queryTBall.each([](flecs::entity bb,
+        const Position &bb_pos1, const Velocity &bb_vel1)
+        {
+            if(bb_vel1.m_vel_x>=0 and bb_pos1.m_x>max_x)
+            {
+                target_e = bb;
+                max_x = bb_pos1.m_x;
+            }
+        });
     return target_e;
 }
 
-void aiSystem_process(flecs::iter &it, size_t i,
-        const AI &ai, const Paddle &pad,
-        Velocity &vel, const Position &pos, const Sprite &spr)
+void aiSystem_process(flecs::iter &it, size_t i, const AI &ai,
+    const Paddle &pad, Velocity &vel, const Position &pos, const Sprite &spr)
 {
 //    AISystem * aisystem = static_cast<AISystem*>(it.ctx());
 
     flecs::entity target_ball;
-    if(aisystem->m_game->m_multithreaded)
+    if (aisystem->m_game->m_multithreaded)
         target_ball = aisystem->findBall_MT(it);
     else
         target_ball = aisystem->findBall(it);
 
-    if(!target_ball.is_valid()) {
-        if (240.0 >= (pos.m_y+(3*spr.m_height/4)))
+    if (!target_ball.is_valid())
+    {
+        if (240.0 >= (pos.m_y + (3 * spr.m_height / 4)))
         {
             vel.m_vel_y = (pad.m_velocity);
         }
-        else if (240.0 <= (pos.m_y+(spr.m_height/4)))
+        else if (240.0 <= (pos.m_y + (spr.m_height / 4)))
         {
             vel.m_vel_y = (-pad.m_velocity);
         }
@@ -106,12 +98,12 @@ void aiSystem_process(flecs::iter &it, size_t i,
     }
     else
     {
-        const auto& ball_pos = target_ball.get<Position>()[0];
-        if (ball_pos.m_y > (pos.m_y+(3*spr.m_height/4)))
+        const auto &ball_pos = target_ball.get<Position>()[0];
+        if (ball_pos.m_y > (pos.m_y + (3 * spr.m_height / 4)))
         {
             vel.m_vel_y = pad.m_velocity;
         }
-        else if (ball_pos.m_y < (pos.m_y+(spr.m_height/4)))
+        else if (ball_pos.m_y < (pos.m_y + (spr.m_height / 4)))
         {
             vel.m_vel_y = (-pad.m_velocity);
         }
