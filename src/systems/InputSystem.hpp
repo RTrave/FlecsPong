@@ -41,11 +41,17 @@ public:
     bool processPlayerEvent(flecs::iter &iter);
     void processGlobalEvent();
 
+    ///
+    /// Is Keyboard set as an azerty? (false is qwerty)
+    ///
     bool isAzerty() const
     {
         return m_azerty;
     }
 
+    ///
+    /// Switch keyboard bind between qwerty and azerty
+    ///
     void switchAzerty()
     {
         if (m_azerty)

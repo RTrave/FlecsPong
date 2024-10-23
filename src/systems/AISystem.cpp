@@ -24,8 +24,19 @@ AISystem::AISystem(Game *game, Window *window)
     m_game = game;
     m_window = window;
     aisystem = this;
-    if (m_game->m_multithreaded)
+    if (m_game->m_multithreaded)    // If multi-threaded
+    {
         thr_stage = m_game->getThrStage1();
+        m_queryBalls = thr_stage
+            ->query_builder<const Position, const Velocity>()
+            .with<Ball>().build();
+    }
+    else
+    {
+        m_queryBalls = aisystem->m_game->m_ecs
+            .query_builder<const Position, const Velocity>()
+            .with<Ball>().build();
+    }
 }
 
 flecs::entity target_e;
@@ -35,10 +46,7 @@ flecs::entity& AISystem::findBall_MT(flecs::iter &it)
 {
     target_e = flecs::entity::null();
     max_x = 0.0;
-    auto qtA = thr_stage
-        ->query_builder<const Position, const Velocity>()
-        .with<Ball>().build();
-    qtA.iter(*thr_stage)
+    m_queryBalls.iter(*thr_stage)
         .each([](flecs::entity bb,
             const Position &bb_pos1, const Velocity &bb_vel1)
         {
@@ -55,10 +63,7 @@ flecs::entity& AISystem::findBall(flecs::iter &it)
 {
     target_e = flecs::entity::null();
     max_x = 0.0;
-    auto queryTBall = aisystem->m_game->m_ecs
-        .query_builder<const Position, const Velocity>()
-        .with<Ball>().build();
-    queryTBall.each([](flecs::entity bb,
+    m_queryBalls.each([](flecs::entity bb,
         const Position &bb_pos1, const Velocity &bb_vel1)
         {
             if(bb_vel1.m_vel_x>=0 and bb_pos1.m_x>max_x)

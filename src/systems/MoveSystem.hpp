@@ -33,8 +33,11 @@ public:
     ~MoveSystem() = default;
 };
 
-void moveSystem_process(flecs::iter &it, size_t i, Velocity &vel, Position &pos,
-        const Sprite &spr);
+///
+/// Move system
+///
+void moveSystem_process(flecs::iter &it, size_t i,
+    Velocity &vel, Position &pos, const Sprite &spr);
 
 } // namespace ep
 

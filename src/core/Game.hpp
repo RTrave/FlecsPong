@@ -63,7 +63,7 @@ public:
     ///
     /// Run the game loop.
     ///
-    /// \return Returns game exit code.
+    /// \return Returns game exit code (multi threaded version).
     ///
     [[maybe_unused]] const int run_MT();
 
@@ -129,7 +129,7 @@ private:
     void systemsInit();
 
     ///
-    /// Init systems and eventually threads
+    /// Init systems and eventually threads (multi threaded version)
     ///
     void systemsInit_MT();
 

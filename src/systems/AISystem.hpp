@@ -31,7 +31,7 @@ public:
     ~AISystem() = default;
 
     ///
-    /// Find ball to target
+    /// Find ball to target (multi threaded version)
     ///
     flecs::entity& findBall_MT(flecs::iter &it);
 
@@ -49,6 +49,11 @@ public:
     /// Pointer to window data.
     ///
     Window *m_window;
+
+    ///
+    /// Balls to track query
+    ///
+    flecs::query<const Position, const Velocity> m_queryBalls;
 };
 
 void aiSystem_process(flecs::iter &it, size_t i,
